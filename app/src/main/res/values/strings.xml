@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MADProject</string>
+    <string name="location_text">Latitude: %1$f, Longitude: %2$f</string>
+</resources>
