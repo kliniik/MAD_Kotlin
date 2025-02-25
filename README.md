@@ -14,7 +14,7 @@ Workspace: https://upm365.sharepoint.com/sites/NataliaandLara
 [add screenshots]
 
 ## Demo Video
-Short video demonstrating how the app works and all its features:
+Short video demonstrating how the app works and all its features:  
 [Deliverable_3 Demonstration Video](https://drive.google.com/file/d/1rVOf5V_Elpv9C39CvpGGCS-eJqftWSPU/view?usp=sharing)
 
 ## Features
