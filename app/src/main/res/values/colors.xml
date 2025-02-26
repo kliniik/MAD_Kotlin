@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primaryColor">#003366</color>  <!-- dark blue (logo color) -->
+    <color name="primaryVariant">#001F4D</color>  <!-- even darker blue -->
+    <color name="secondaryColor">#FF9800</color>  <!-- orange for warnings -->
+
+    <!-- Background colors -->
+    <color name="backgroundColor">#F5F5F5</color>  <!-- light gray -->
+
+    <!-- Text & UI -->
+    <color name="textColorPrimary">#DEE3E4</color>  <!-- light gray for text -->
+    <color name="buttonColor">#004080</color>  <!-- mid blue for buttons -->
 </resources>

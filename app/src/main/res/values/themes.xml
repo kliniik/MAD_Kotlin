@@ -2,8 +2,22 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MADProject" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryVariant</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+
+        <!-- Background Colors -->
+        <item name="android:colorBackground">@color/backgroundColor</item>
+
+        <!-- Button & UI Colors -->
+        <item name="android:buttonStyle">@color/buttonColor</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+
+        <!-- Disable Dark Mode for API 29+ -->
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
     </style>
 
+    <!-- Apply Theme -->
     <style name="Theme.MADProject" parent="Base.Theme.MADProject" />
 </resources>
