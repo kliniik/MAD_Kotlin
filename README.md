@@ -11,7 +11,8 @@ Workspace: https://upm365.sharepoint.com/sites/NataliaandLara
 EcoFlood is a disaster-prevention mobile app designed to help users stay informed and safe during floods and landslides. It provides real-time alerts based on weather data and crowdsourced reports from users. The app features GPS tracking, map integration, and offline capabilities to ensure that users have access to critical information even during emergencies. Additionally, users can report incidents like flooding or landslides, helping to build a community-driven platform for disaster prevention and awareness.
 
 ## Screenshots and Navigation
-[add screenshots]
+![Screenshot1](screenshots/screen_app1.png)
+![Screenshot2](screenshots/screen_app2.png)
 
 ## Demo Video
 Short video demonstrating how the app works and all its features:  
