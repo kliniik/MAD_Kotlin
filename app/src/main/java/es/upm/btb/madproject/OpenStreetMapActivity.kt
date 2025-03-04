@@ -27,37 +27,30 @@ class OpenStreetMapActivity : AppCompatActivity() {
     private val TAG = "btaOpenStreetMapActivity"
     private lateinit var map: MapView
 
+    // flood risk zones in Valencia
     private val gymkhanaCoords = listOf(
-        GeoPoint(40.38779608214728, -3.627687914352839), // Tennis
-        GeoPoint(40.38788595319803, -3.627048250272035), // Futsal outdoors
-        GeoPoint(40.3887315224542, -3.628643539758645), // Fashion and design
-        GeoPoint(40.38926842612264, -3.630067893975619), // Topos
-        GeoPoint(40.38956358584258, -3.629046081389352), // Teleco
-        GeoPoint(40.38992125672989, -3.6281366497769714), // ETSISI
-        GeoPoint(40.39037466191718, -3.6270256763598447), // Library
-        GeoPoint(40.389855884803005, -3.626782180787362) // CITSEM
+        GeoPoint(39.4699, -0.3774), // Near the Turia River, central Valencia
+        GeoPoint(39.4636, -0.3783), // Near the Turia Bridge
+        GeoPoint(39.4598, -0.3751), // Near the Turia Gardens
+        GeoPoint(39.4573, -0.3710), // Near the Albufera Bridge
+        GeoPoint(39.4605, -0.3845)  // Near parks and bike paths along the river
     )
     private val gymkhanaNames = listOf(
-        "Tennis",
-        "Futsal Outdoors",
-        "Fashion and Design School",
-        "Topography School",
-        "Telecommunications School",
-        "ETSISI",
-        "Library",
-        "CITSEM"
+        "Near the Turia River - Central Valencia",
+        "Near the Turia Bridge",
+        "Near the Turia Gardens",
+        "Near the Albufera Bridge",
+        "Near Parks and Bike Paths along the River"
     )
 
     private val gymkhanaDescriptions = listOf(
-        "Outdoor tennis courts for practice and matches.",
-        "Open-air futsal field for small-sided games.",
-        "Institution focused on fashion and creative design studies.",
-        "School specializing in land surveying and mapping technologies.",
-        "Faculty dedicated to communication and network technologies.",
-        "School of Information Systems Engineering and Informatics.",
-        "A resource center with books, study spaces, and digital materials.",
-        "Research center for technology and applied sciences."
+        "A central location near the Turia River with easy access to various parks and landmarks.",
+        "Close to the Turia Bridge, offering scenic views of the river and surrounding nature trails.",
+        "Near the Turia Gardens, a lush green area along the river, popular for walking, cycling, and relaxation.",
+        "Close to the Albufera Bridge, a picturesque spot along the river, perfect for photo opportunities and peaceful walks.",
+        "A popular park area near the river, with bike paths and recreational areas along the Turia River's course."
     )
+
 
 
     private val gymkhanaIcons = listOf(
@@ -106,7 +99,8 @@ class OpenStreetMapActivity : AppCompatActivity() {
             GeoPoint(location.latitude, location.longitude)
         } else {
             Log.d(TAG, "onCreate: Location is null, using default coordinates")
-            GeoPoint(40.389683644051864, -3.627825356970311)
+            //GeoPoint(40.389683644051864, -3.627825356970311)
+            GeoPoint(39.4699, -0.3763) // Valencia, Spain
         }
 
         map = findViewById(R.id.map)
@@ -121,7 +115,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.icon =
             ContextCompat.getDrawable(this, android.R.drawable.ic_delete) as BitmapDrawable
-        marker.title = "My current location"
+        marker.title = "Valencia, Spain"
         map.overlays.add(marker)
 
         // Add list of markers
