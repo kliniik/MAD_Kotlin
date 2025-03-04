@@ -28,30 +28,46 @@ class OpenStreetMapActivity : AppCompatActivity() {
     private lateinit var map: MapView
 
     // flood risk zones in Valencia
+    // private val gymkhanaCoords = listOf(
+//        GeoPoint(39.4699, -0.3774), // Near the Turia River, central Valencia
+//        GeoPoint(39.4636, -0.3783), // Near the Turia Bridge
+//        GeoPoint(39.4598, -0.3751), // Near the Turia Gardens
+//        GeoPoint(39.4573, -0.3710), // Near the Albufera Bridge
+//        GeoPoint(39.4605, -0.3845)  // Near parks and bike paths along the rive
+//
+//        GeoPoint(39.4705, -0.3768), // Bridge in the centre of Valencia
+//        GeoPoint(39.4665, -0.3755), // Turia garden - low-lying area
+//        GeoPoint(39.4622, -0.3740), // Close to oceanarium, historical flooding
+//        GeoPoint(39.4581, -0.3730), // Recreational areas close to river
+//        GeoPoint(39.4715, -0.3800), // High risk of flooding - old river channel
+//
+//
+//    )
+
+    // Flood risk zones around the current Turia River
     private val gymkhanaCoords = listOf(
-        GeoPoint(39.4699, -0.3774), // Near the Turia River, central Valencia
-        GeoPoint(39.4636, -0.3783), // Near the Turia Bridge
-        GeoPoint(39.4598, -0.3751), // Near the Turia Gardens
-        GeoPoint(39.4573, -0.3710), // Near the Albufera Bridge
-        GeoPoint(39.4605, -0.3845)  // Near parks and bike paths along the river
+        GeoPoint(39.4358, -0.3183), // Turia River Mouth
+        GeoPoint(39.4273, -0.3199), // Pinedo Beach
+        GeoPoint(39.3911, -0.3165), // El Saler Wetlands
+        GeoPoint(39.3541, -0.3190), // Albufera Natural Park
+        GeoPoint(39.4441, -0.3442)  // Nazaret Neighborhood
     )
+
     private val gymkhanaNames = listOf(
-        "Near the Turia River - Central Valencia",
-        "Near the Turia Bridge",
-        "Near the Turia Gardens",
-        "Near the Albufera Bridge",
-        "Near Parks and Bike Paths along the River"
+        "Turia River Mouth",
+        "Pinedo Beach",
+        "El Saler Wetlands",
+        "Albufera Natural Park",
+        "Nazaret Neighborhood"
     )
 
     private val gymkhanaDescriptions = listOf(
-        "A central location near the Turia River with easy access to various parks and landmarks.",
-        "Close to the Turia Bridge, offering scenic views of the river and surrounding nature trails.",
-        "Near the Turia Gardens, a lush green area along the river, popular for walking, cycling, and relaxation.",
-        "Close to the Albufera Bridge, a picturesque spot along the river, perfect for photo opportunities and peaceful walks.",
-        "A popular park area near the river, with bike paths and recreational areas along the Turia River's course."
+        "The mouth of the Turia River, where heavy rains and storm surges can cause flooding, affecting nearby beaches and the Valencia Port area.",
+        "A coastal area vulnerable to rising sea levels and river overflows, especially during storms and high tides.",
+        "A natural reserve that absorbs excess water but is at risk during extreme weather events, potentially impacting wildlife and nearby infrastructure.",
+        "A low-lying wetland area where river floods mix with seawater, threatening both agriculture and biodiversity.",
+        "A historically flood-prone district near the river, where heavy rain can overwhelm drainage systems, causing urban flooding."
     )
-
-
 
     private val gymkhanaIcons = listOf(
         R.drawable.icon_tennis,
@@ -96,11 +112,13 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 TAG,
                 "onCreate: Location[${location.altitude}][${location.latitude}][${location.longitude}]"
             )
-            GeoPoint(location.latitude, location.longitude)
+            //GeoPoint(location.latitude, location.longitude)
+            //GeoPoint(39.4702, -0.3768) // Valencia, Spain
+            GeoPoint(39.426714, -0.339140)
         } else {
             Log.d(TAG, "onCreate: Location is null, using default coordinates")
             //GeoPoint(40.389683644051864, -3.627825356970311)
-            GeoPoint(39.4699, -0.3763) // Valencia, Spain
+            GeoPoint(39.426714, -0.339140) // Valencia, Spain
         }
 
         map = findViewById(R.id.map)
@@ -114,8 +132,8 @@ class OpenStreetMapActivity : AppCompatActivity() {
         marker.position = startPoint
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.icon =
-            ContextCompat.getDrawable(this, android.R.drawable.ic_delete) as BitmapDrawable
-        marker.title = "Valencia, Spain"
+            ContextCompat.getDrawable(this, R.drawable.river_svgrepo_com) as BitmapDrawable
+        marker.title = "Turia River, Valencia, Spain"
         map.overlays.add(marker)
 
         // Add list of markers
@@ -141,7 +159,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 // marker.icon = ContextCompat.getDrawable(context, android.R.drawable.ic_menu_compass) as BitmapDrawable
 
                 if (i < icons.size) {
-                    val resizedIcon = vectorToBitmapDrawable(context, icons[i], iconSize, iconSize)
+                    val resizedIcon = vectorToBitmapDrawable(context, R.drawable.danger_svgrepo_com, iconSize, iconSize)
                     if (resizedIcon != null) {
                         marker.icon = resizedIcon
                     } else {
