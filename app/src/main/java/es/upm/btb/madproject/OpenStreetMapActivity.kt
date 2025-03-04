@@ -113,7 +113,6 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 "onCreate: Location[${location.altitude}][${location.latitude}][${location.longitude}]"
             )
             //GeoPoint(location.latitude, location.longitude)
-            //GeoPoint(39.4702, -0.3768) // Valencia, Spain
             GeoPoint(39.426714, -0.339140)
         } else {
             Log.d(TAG, "onCreate: Location is null, using default coordinates")
@@ -127,12 +126,22 @@ class OpenStreetMapActivity : AppCompatActivity() {
         map.controller.setCenter(startPoint)
         map.setMultiTouchControls(true)
 
+        Log.d(TAG, "Map initialized: $map")
+
         // Add starting point marker
         val marker = Marker(map)
         marker.position = startPoint
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.icon =
-            ContextCompat.getDrawable(this, R.drawable.river_svgrepo_com) as BitmapDrawable
+//        marker.icon =
+//            ContextCompat.getDrawable(this, R.drawable.river_svgrepo_com) as VectorDrawable
+
+        val resizedIcon = vectorToBitmapDrawable(this, R.drawable.river_svgrepo_com, 50, 50)
+        if (resizedIcon != null) {
+            marker.icon = resizedIcon
+        } else {
+            Log.e(TAG, "Error resizing icon for river_svgrepo_com")
+        }
+
         marker.title = "Turia River, Valencia, Spain"
         map.overlays.add(marker)
 
