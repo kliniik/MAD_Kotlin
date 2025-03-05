@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">MADProject</string>
     <string name="location_text">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="title_home">Home</string>
+    <string name="title_map">Map</string>
+    <string name="title_list">Collection</string>
+    <string name="title_config">Settings</string>
+    <string name="navigation_drawer_open">Open Nav</string>
+    <string name="navigation_drawer_close">Close Nav</string>
 </resources>

@@ -42,10 +42,15 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Dependence for osmdroid
     implementation(libs.osmdroid.android)
+
+    // Dependence Navigation Drawer
+    implementation(libs.material.v190)
+    implementation(libs.androidx.drawerlayout)
 }
