@@ -8,18 +8,23 @@
     tools:context=".MainActivity">
 
     <!-- Toolbar mit Menü (Drei Punkte für Settings) -->
+
+    <!-- Haupt-TextView -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="MAD Project"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="80dp"
+        android:elevation="4dp"
+        android:background="@color/primaryColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@android:color/white"
+        android:paddingTop="40dp"
+        app:title="MAD Project" />
 
-    <!-- Haupt-TextView -->
     <TextView
         android:id="@+id/mainTextView"
         android:layout_width="wrap_content"

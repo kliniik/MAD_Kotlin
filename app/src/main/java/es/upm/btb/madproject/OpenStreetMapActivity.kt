@@ -13,8 +13,10 @@ import org.osmdroid.views.overlay.Polyline
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class OpenStreetMapActivity : AppCompatActivity() {
     private lateinit var map: MapView
@@ -60,6 +62,29 @@ class OpenStreetMapActivity : AppCompatActivity() {
 
         // Route zwischen Markern zeichnen
         drawPolyline()
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_list // Markiert "Liste" als aktiv
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.navigation_map -> {
+                    startActivity(Intent(this, OpenStreetMapActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.navigation_list -> {
+                    true // Bereits in "Liste", also nichts tun
+                }
+                else -> false
+            }
+        }
+
     }
 
     private fun addGymkhanaMarkers() {

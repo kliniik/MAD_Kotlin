@@ -20,6 +20,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class SecondActivity : AppCompatActivity() {
     private val TAG = "SecondActivity"
@@ -44,6 +45,29 @@ class SecondActivity : AppCompatActivity() {
 
         val coordinatesAdapter = CoordinatesAdapter(this, readFileContents())
         coordinatesListView.adapter = coordinatesAdapter
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_list // Markiert "Liste" als aktiv
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.navigation_map -> {
+                    startActivity(Intent(this, OpenStreetMapActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.navigation_list -> {
+                    true // Bereits in "Liste", also nichts tun
+                }
+                else -> false
+            }
+        }
+
     }
 
     private fun createCsvFileIfNotExists() {
@@ -69,11 +93,9 @@ class SecondActivity : AppCompatActivity() {
     private fun readFileContents(): List<List<String>> {
         return try {
             openFileInput("gps_coordinates.csv").bufferedReader().useLines { lines ->
-                lines.map {
-                    val data = it.split(";").map(String::trim)
-                    Log.d("CSV_DATA", "Zeile: $data") // Debugging
-                    data
-                }.toList()
+                lines.drop(1).map { it.split(";").map(String::trim) }
+                    .filter { it.size == 4 }
+                    .toList()
             }
         } catch (e: IOException) {
             listOf(listOf("Error reading file: ${e.message}"))
@@ -94,11 +116,11 @@ class SecondActivity : AppCompatActivity() {
             val altitudeTextView: TextView = view.findViewById(R.id.tvAltitude)
 
             val item = coordinatesList[position]
-            if (item.size < 4) {
+            if (item.size == 4) {
                 timestampTextView.text = formatTimestamp(item[0].toLong())
-                latitudeTextView.text = formatCoordinate(item[1].toDouble())
-                longitudeTextView.text = formatCoordinate(item[2].toDouble())
-                altitudeTextView.text = formatCoordinate(item[3].toDouble())
+                latitudeTextView.text = formatCoordinate(item[1].replace(",", ".").toDouble())
+                longitudeTextView.text = formatCoordinate(item[2].replace(",", ".").toDouble())
+                altitudeTextView.text = formatCoordinate(item[3].replace(",", ".").toDouble())
             } else {
                 timestampTextView.text = "Invalid Data"
                 latitudeTextView.text = ""

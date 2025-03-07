@@ -19,31 +19,34 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import android.location.LocationManager
+import android.util.Log
 import java.io.File
+import java.io.IOException
 
 class MainActivity : AppCompatActivity(), LocationListener {
-    private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationSwitch: Switch
-    private val locationPermissionCode = 2
-    private var latestLocation: Location? = null
+    private lateinit var bottomNavigationView: BottomNavigationView // bottom nav bar
+    private lateinit var locationManager: LocationManager // location updates
+    private lateinit var locationSwitch: Switch // enables/disables location tracking
+    private val locationPermissionCode = 2 // location permissions
+    private var latestLocation: Location? = null // stores last known GPS location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Toolbar mit Overflow-Menü (Settings)
+        // Toolbar with Overflow Menu (Settings)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Bottom Navigation View
+        // Bottom Navigation View (Home: MainActivity, Map: OpenStreetMapActivity, List: SecondActivity)
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
                     startActivity(Intent(this, MainActivity::class.java))
                     true
+
                 }
                 R.id.navigation_map -> {
                     val intent = Intent(this, OpenStreetMapActivity::class.java)
@@ -64,10 +67,10 @@ class MainActivity : AppCompatActivity(), LocationListener {
             }
         }
 
-        // Location Manager initialisieren
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationSwitch = findViewById(R.id.locationSwitch)
-        locationSwitch.setOnCheckedChangeListener { _, isChecked ->
+        // Location Manager initialization
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager // retrieves location service
+        locationSwitch = findViewById(R.id.locationSwitch) // finds switch UI element
+        locationSwitch.setOnCheckedChangeListener { _, isChecked -> // toggles location tracking
             if (isChecked) {
                 locationSwitch.text = "Disable location"
                 startLocationUpdates()
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
             }
         }
 
-        // Überprüfe gespeicherte User ID
+        // Retrieve stored User ID + display toast message
         val userIdentifier = getUserIdentifier()
         if (userIdentifier == null) {
             Toast.makeText(this, "No User ID found", Toast.LENGTH_LONG).show()
@@ -86,13 +89,13 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
     }
 
-    // 🟢 Menü (drei Punkte oben rechts) erzeugen
+    // Create menu (3 dots)
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_menu, menu)
         return true
     }
 
-    // 🟢 Klick-Handling für das Menü
+    // Starts SettingsActivity when the setting menu item is clicked
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
@@ -103,6 +106,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Start Location Updates every 5 minutes
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -118,33 +122,47 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 locationPermissionCode
             )
         } else {
+            Log.d("LOCATION_UPDATE", "Start GPS updates...")
+
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
         }
     }
 
+    // Stop Location Updates
     private fun stopLocationUpdates() {
         locationManager.removeUpdates(this)
     }
 
+    // Handle Location Permission Request (updates latestLocation and TextView with lat/lon + save GPS data)
     override fun onLocationChanged(location: Location) {
         latestLocation = location
+
+        Log.d("Location", "New Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Alt: ${location.altitude}")
+
         val textView: TextView = findViewById(R.id.mainTextView)
         val locationText = "Lat: ${location.latitude}, Lon: ${location.longitude}"
         textView.text = locationText
         saveCoordinatesToFile(location.latitude, location.longitude, location.altitude)
     }
 
+    // User ID storage (retrieves user ID from SharedPreferences)
     private fun getUserIdentifier(): String? {
         val sharedPreferences = this.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userIdentifier", null)
     }
 
+    // appends timestamped GPS data to a CSV file
     private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
         val file = File(filesDir, "gps_coordinates.csv")
 
         val timestamp = System.currentTimeMillis().toString()
         val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
 
-        file.appendText(formattedData)  // Neue Zeile in die Datei schreiben
+        try {
+            file.appendText(formattedData)
+            Log.d("FILE_WRITE", "GPS-Daten gespeichert: $formattedData")
+        } catch (e: IOException) {
+            Log.e("FILE_WRITE", "Fehler beim Speichern: ${e.message}")
+        }
     }
 }
