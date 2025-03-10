@@ -53,4 +53,7 @@ dependencies {
     // Dependence Navigation Drawer
     implementation(libs.material.v190)
     implementation(libs.androidx.drawerlayout)
+
+    // Dependence for Bottom Navigation - already added in the material dependency??
+    //implementation "com.google.android.material:material:1.11.0"
 }

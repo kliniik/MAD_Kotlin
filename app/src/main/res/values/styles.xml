@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Style for the overflow menu (three dots) -->
+    <style name="OverflowMenuStyle" parent="Widget.AppCompat.PopupMenu">
+        <!-- Set text color to white for the overflow menu items -->
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="CustomToolbarStyle" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@color/primaryColor</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+</resources>

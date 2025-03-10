@@ -21,12 +21,16 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         val editTextUserIdentifier: EditText = findViewById(R.id.editTextUserIdentifier)
         val buttonSave: Button = findViewById(R.id.buttonSave)
 
-        // Setze gespeicherte Werte, falls vorhanden
-        editTextUserIdentifier.setText(sharedPreferences.getString("userIdentifier", ""))
+        // Load existing user identifier if available
+        val sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val userIdentifier = sharedPreferences.getString("userIdentifier", "")
+        editTextUserIdentifier.setText(userIdentifier)
+
+//        // Setze gespeicherte Werte, falls vorhanden
+//        editTextUserIdentifier.setText(sharedPreferences.getString("userIdentifier", ""))
 
         buttonSave.setOnClickListener {
             val userInput = editTextUserIdentifier.text.toString()
@@ -35,9 +39,9 @@ class SettingsActivity : AppCompatActivity() {
                     putString("userIdentifier", userInput)
                     apply()
                 }
-                Toast.makeText(this, "User ID gespeichert: $userInput", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "User ID saved: $userInput", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "User ID darf nicht leer sein!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "User ID cannot be blank!", Toast.LENGTH_SHORT).show()
             }
         }
     }

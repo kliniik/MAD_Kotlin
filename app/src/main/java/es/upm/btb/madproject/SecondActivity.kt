@@ -79,7 +79,6 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-
     // Reads simple lines of file `lvFileContents`
     private fun readFileLines(): List<String> {
         return try {

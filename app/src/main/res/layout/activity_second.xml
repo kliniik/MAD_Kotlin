@@ -19,8 +19,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@android:color/white"
-        android:paddingTop="40dp"
+        app:titleTextColor="@color/textColorPrimary"
+
         app:title="Saved GPS Coordinates" />
 
     <ListView

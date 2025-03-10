@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Menu item for settings -->
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_settings"
+        android:textColor="@color/textColorPrimary"
+        android:title="Home"
+        android:background="@color/primaryColor"
+        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+
+    <item
+        android:id="@+id/nav_open_street_map"
+        android:icon="@drawable/ic_settings"
+        android:textColor="@color/textColorPrimary"
+        android:title="OpenStreetMap Activity"
+        android:background="@color/primaryColor"
+        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+
+    <item
+        android:id="@+id/nav_second_activity"
+        android:icon="@drawable/ic_settings"
+        android:title="Saved GPS Coordinates"
+        android:theme="@style/CustomToolbarStyle"
+        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+
     <item
         android:id="@+id/menu_settings"
+        android:background="@color/textColorPrimary"
         android:icon="@drawable/ic_settings"
         android:title="Settings"
-        app:showAsAction="never"/>
+        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+
+
 </menu>
