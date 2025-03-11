@@ -9,7 +9,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.Polyline
+//import org.osmdroid.views.overlay.Polyline
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.ContextCompat
 import android.content.Context
@@ -26,6 +26,12 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
+import es.upm.btb.madproject.room.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.osmdroid.views.overlay.Polyline
 
 class OpenStreetMapActivity : AppCompatActivity() {
     private lateinit var map: MapView
@@ -178,6 +184,9 @@ class OpenStreetMapActivity : AppCompatActivity() {
         // Route zwischen Markern zeichnen
         drawPolyline()
 
+        // load the coordinates from Room and show with the other marker
+        loadDatabaseMarkers()
+
         // bottom navigation
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.selectedItemId = R.id.navigation_map // Markiert "Karte" als aktiv
@@ -265,4 +274,31 @@ class OpenStreetMapActivity : AppCompatActivity() {
         drawable.draw(canvas)
         return BitmapDrawable(context.resources, bitmap)
     }
+
+    private fun loadDatabaseMarkers() {
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val dbCoordinates = db.coordinatesDao().getAll()
+            val roomGeoPoints = dbCoordinates.map {
+                GeoPoint(it.latitude, it.longitude)
+            }
+            Log.d(TAG, "Coordinates obtained from Room: $roomGeoPoints")
+
+            withContext(Dispatchers.Main) {
+                addDatabaseMarkers(map, roomGeoPoints, this@OpenStreetMapActivity)
+            }
+        }
+    }
+
+    private fun addDatabaseMarkers(map: MapView, coords: List<GeoPoint>, context: Context) {
+        for (geoPoint in coords) {
+            val marker = Marker(map)
+            marker.position = geoPoint
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            marker.icon = ContextCompat.getDrawable(context, android.R.drawable.ic_delete) as BitmapDrawable
+            marker.title = "Saved Coordinate"
+            map.overlays.add(marker)
+        }
+    }
+
 }

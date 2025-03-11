@@ -43,7 +43,11 @@
             app:menu="@menu/bottom_nav_menu"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent" />
+<!--            app:itemIconTint="@drawable/bottom_nav_colors"-->
+<!--            app:itemTextColor="@drawable/bottom_nav_colors"-->
+<!--            app:itemRippleColor="@color/colorBottomNavRipple"-->
+<!--            app:backgroundTint="@color/colorBottomNavBackground" /> -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

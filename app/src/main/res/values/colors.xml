@@ -10,4 +10,10 @@
     <!-- Text & UI -->
     <color name="textColorPrimary">#DEE3E4</color>  <!-- light gray for text -->
     <color name="buttonColor">#004080</color>  <!-- mid blue for buttons -->
+
+    <!-- Bottom Navigation Bar -->
+    <color name="colorBottomNavItemSelected">#FF9800</color> <!-- Pomarańczowy dla wybranych elementów -->
+    <color name="colorBottomNavItemUnselected">#DEE3E4</color> <!-- Jasnoszary dla niewybranych elementów -->
+    <color name="colorBottomNavBackground">#003366</color> <!-- Dark blue dla tła -->
+    <color name="colorBottomNavRipple">#FF4081</color> <!-- Fala podczas kliknięcia -->
 </resources>

@@ -28,6 +28,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
+import es.upm.btb.madproject.room.AppDatabase
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SecondActivity : AppCompatActivity() {
     private val TAG = "SecondActivity"
@@ -56,6 +62,24 @@ class SecondActivity : AppCompatActivity() {
 
         val coordinatesAdapter = CoordinatesAdapter(this, readFileContents())
         coordinatesListView.adapter = coordinatesAdapter
+
+        // database
+        val db = AppDatabase.getDatabase(this)
+
+        // Obtener datos desde Room y crear el adaptador con los datos directamente
+        lifecycleScope.launch {
+            val dbCoordinates = db.coordinatesDao().getAll()
+
+            val roomCoordinates = dbCoordinates.map {
+                listOf(it.timestamp.toString(), it.latitude.toString(), it.longitude.toString(), it.altitude.toString())
+            }
+
+            Log.d(TAG, "Data obtained from Room: $roomCoordinates")
+
+            // Instanciar el adaptador con los datos de Room directamente
+            val adapter = CoordinatesAdapter(this@SecondActivity, roomCoordinates)
+            listView.adapter = adapter  // Asignar el adaptador al ListView
+        }
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.selectedItemId = R.id.navigation_list // Markiert "Liste" als aktiv

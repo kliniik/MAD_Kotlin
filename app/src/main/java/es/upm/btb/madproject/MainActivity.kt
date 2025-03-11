@@ -27,6 +27,11 @@ import android.provider.Settings
 import java.io.File
 import java.io.IOException
 
+import androidx.lifecycle.lifecycleScope
+import es.upm.btb.madproject.room.AppDatabase
+import es.upm.btb.madproject.room.CoordinatesEntity
+import kotlinx.coroutines.launch
+
 class MainActivity : AppCompatActivity(), LocationListener {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -64,6 +69,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.nav_open_street_map -> {
                     val intent = Intent(this, OpenStreetMapActivity::class.java)
                     latestLocation?.let {
@@ -75,16 +81,19 @@ class MainActivity : AppCompatActivity(), LocationListener {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.nav_second_activity -> {
                     startActivity(Intent(this, SecondActivity::class.java))
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+
                 R.id.menu_settings -> {
                     startActivity(Intent(this, SettingsActivity::class.java))
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+
                 else -> false
             }
         }
@@ -98,6 +107,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 R.id.navigation_home -> {
                     true
                 }
+
                 R.id.navigation_map -> {
                     val intent = Intent(this, OpenStreetMapActivity::class.java)
                     latestLocation?.let {
@@ -109,11 +119,13 @@ class MainActivity : AppCompatActivity(), LocationListener {
                     finish()
                     true
                 }
+
                 R.id.navigation_list -> {
                     startActivity(Intent(this, SecondActivity::class.java))
                     finish()
                     true
                 }
+
                 else -> false
             }
         }
@@ -132,8 +144,15 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
 
         // Request location permissions if not granted
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestLocationPermission()
         } else {
             Log.d("MainActivity", "Location permission already granted")
@@ -154,6 +173,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
+
             R.id.nav_open_street_map -> {
                 val intent = Intent(this, OpenStreetMapActivity::class.java)
                 latestLocation?.let {
@@ -164,18 +184,27 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 startActivity(intent)
                 true
             }
+
             R.id.nav_second_activity -> {
                 startActivity(Intent(this, SecondActivity::class.java))
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     // Location Updates
     private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestLocationPermission()
         } else {
             Log.d("LOCATION_UPDATE", "Start GPS updates...")
@@ -200,30 +229,72 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         latestLocation = location
-        Log.d("Location", "New Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Alt: ${location.altitude}")
+        Log.d(
+            "Location",
+            "New Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Alt: ${location.altitude}"
+        )
 
         val textView: TextView = findViewById(R.id.mainTextView)
         textView.text = "Lat: ${location.latitude}, Lon: ${location.longitude}"
 
-        saveCoordinatesToFile(location.latitude, location.longitude, location.altitude)
+        //saveCoordinatesToFile(location.latitude, location.longitude, location.altitude)
+        saveCoordinatesToDatabase(
+            location.latitude,
+            location.longitude,
+            location.altitude,
+            location.time
+        )
+    }
+
+    private fun saveCoordinatesToDatabase(
+        latitude: Double,
+        longitude: Double,
+        altitude: Double,
+        timestamp: Long
+    ) {
+        val coordinates = CoordinatesEntity(
+            timestamp = timestamp,
+            latitude = latitude,
+            longitude = longitude,
+            altitude = altitude
+        )
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch {
+            db.coordinatesDao().insert(coordinates)
+        }
     }
 
     private fun requestLocationPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Toast.makeText(this, "We need access to your location to track your position", Toast.LENGTH_LONG).show()
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) {
+            Toast.makeText(
+                this,
+                "We need access to your location to track your position",
+                Toast.LENGTH_LONG
+            ).show()
             Log.d("MainActivity", "Permission rationale shown")
         }
 
         // Request the permissions
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
             locationPermissionCode
         )
     }
 
     // Handle the result of the permission request
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == locationPermissionCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -231,8 +302,16 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 Toast.makeText(this, "Location permissions granted", Toast.LENGTH_SHORT).show()
                 Log.d("MainActivity", "Permission granted")
             } else {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Toast.makeText(this, "You need to manually enable location permissions in app settings", Toast.LENGTH_LONG).show()
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
+                    Toast.makeText(
+                        this,
+                        "You need to manually enable location permissions in app settings",
+                        Toast.LENGTH_LONG
+                    ).show()
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = android.net.Uri.fromParts("package", packageName, null)
                     intent.data = uri
@@ -245,17 +324,18 @@ class MainActivity : AppCompatActivity(), LocationListener {
             }
         }
     }
-
-    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
-        val file = File(filesDir, "gps_coordinates.csv")
-        val timestamp = System.currentTimeMillis().toString()
-        val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
-
-        try {
-            file.appendText(formattedData)
-            Log.d("FILE_WRITE", "GPS data saved: $formattedData")
-        } catch (e: IOException) {
-            Log.e("FILE_WRITE", "Error saving data: ${e.message}")
-        }
-    }
 }
+
+//    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
+//        val file = File(filesDir, "gps_coordinates.csv")
+//        val timestamp = System.currentTimeMillis().toString()
+//        val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
+//
+//        try {
+//            file.appendText(formattedData)
+//            Log.d("FILE_WRITE", "GPS data saved: $formattedData")
+//        } catch (e: IOException) {
+//            Log.e("FILE_WRITE", "Error saving data: ${e.message}")
+//        }
+//    }
+//}
