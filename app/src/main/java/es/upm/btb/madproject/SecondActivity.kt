@@ -2,9 +2,12 @@ package es.upm.btb.madproject
 
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -13,6 +16,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.io.File
@@ -21,9 +25,16 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.widget.Toolbar
 
 class SecondActivity : AppCompatActivity() {
     private val TAG = "SecondActivity"
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private var latestLocation: Location? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +60,47 @@ class SecondActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.selectedItemId = R.id.navigation_list // Markiert "Liste" als aktiv
 
+        // toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Initialize the DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.navigation_view)
+
+        // Set up item selection listener for the Drawer
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_open_street_map -> {
+                    val intent = Intent(this, OpenStreetMapActivity::class.java)
+                    latestLocation?.let {
+                        val bundle = Bundle()
+                        bundle.putParcelable("location", it)
+                        intent.putExtra("locationBundle", bundle)
+                    }
+                    startActivity(intent)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_second_activity -> {
+                    startActivity(Intent(this, SecondActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.menu_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                else -> false
+            }
+        }
+
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
@@ -69,6 +121,8 @@ class SecondActivity : AppCompatActivity() {
         }
 
     }
+
+
 
     private fun createCsvFileIfNotExists() {
         val file = File(filesDir, "gps_coordinates.csv")
@@ -100,6 +154,37 @@ class SecondActivity : AppCompatActivity() {
             listOf(listOf("Error reading file: ${e.message}"))
         }
     }
+
+    // Toolbar menu
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.top_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.nav_open_street_map -> {
+                val intent = Intent(this, OpenStreetMapActivity::class.java)
+                latestLocation?.let {
+                    val bundle = Bundle()
+                    bundle.putParcelable("location", it)
+                    intent.putExtra("locationBundle", bundle)
+                }
+                startActivity(intent)
+                true
+            }
+            R.id.nav_second_activity -> {
+                startActivity(Intent(this, SecondActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     // Adapter zur Anzeige von Koordinaten-Daten in `lvCoordinates`
     private class CoordinatesAdapter(context: Context, private val coordinatesList: List<List<String>>) :

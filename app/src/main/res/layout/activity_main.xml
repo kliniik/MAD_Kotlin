@@ -13,20 +13,18 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <!-- Toolbar mit Menü (Drei Punkte für Settings) -->
-
         <!-- Haupt-TextView -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="60dp"
             android:background="@color/primaryColor"
             android:elevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:popupTheme="@style/PopupThemeWhiteText"
             app:title="EcoFlood"
             app:titleTextColor="@color/textColorPrimary" />
 

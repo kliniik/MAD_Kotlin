@@ -10,4 +10,11 @@
         <item name="android:background">@color/primaryColor</item>
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
+
+    <style name="PopupThemeWhiteText" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/textColorPrimary</item> <!-- Biały tekst -->
+        <item name="android:background">@color/primaryColor</item> <!-- Tło -->
+        <item name="android:popupBackground">@color/primaryColor</item> <!-- Tło menu -->
+    </style>
+
 </resources>

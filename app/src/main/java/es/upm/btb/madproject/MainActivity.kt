@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
+import android.os.Build
 
 import android.provider.Settings
 import java.io.File
@@ -39,6 +40,13 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // set status bar color
+        //window.statusBarColor = getColor(R.color.primaryColor)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor));
+        }
+
 
         // Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -83,10 +91,11 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
         // Bottom Navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_home
+
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
                     true
                 }
                 R.id.navigation_map -> {
@@ -97,10 +106,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
                         intent.putExtra("locationBundle", bundle)
                     }
                     startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.navigation_list -> {
                     startActivity(Intent(this, SecondActivity::class.java))
+                    finish()
                     true
                 }
                 else -> false
@@ -136,16 +147,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
         menuInflater.inflate(R.menu.top_menu, menu)
         return true
     }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            R.id.menu_settings -> {
-//                startActivity(Intent(this, SettingsActivity::class.java))
-//                true
-//            }
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
