@@ -71,7 +71,7 @@ class SecondActivity : AppCompatActivity() {
         // Set up item selection listener for the Drawer
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> {
+                R.id.nav_home -> {
                     startActivity(Intent(this, MainActivity::class.java))
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
@@ -178,7 +178,11 @@ class SecondActivity : AppCompatActivity() {
                 true
             }
             R.id.nav_second_activity -> {
-                startActivity(Intent(this, SecondActivity::class.java))
+                //startActivity(Intent(this, SecondActivity::class.java))
+                true
+            }
+            R.id.nav_home -> {
+                startActivity(Intent(this, MainActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

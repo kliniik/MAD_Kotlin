@@ -184,7 +184,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> {
+                R.id.nav_home -> {
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                     true
@@ -227,6 +227,10 @@ class OpenStreetMapActivity : AppCompatActivity() {
             }
             R.id.nav_second_activity -> {
                 startActivity(Intent(this, SecondActivity::class.java))
+                true
+            }
+            R.id.nav_home -> {
+                startActivity(Intent(this, MainActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
