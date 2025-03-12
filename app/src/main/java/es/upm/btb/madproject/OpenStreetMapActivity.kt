@@ -193,7 +193,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
+                R.id.navigation_home -> {
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                     true
@@ -204,7 +204,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 R.id.navigation_list -> {
                     startActivity(Intent(this, SecondActivity::class.java))
                     finish()
-                    true // Bereits in "Liste", also nichts tun
+                    true // Already in "list" ,so don't do anything
                 }
                 else -> false
             }
