@@ -31,9 +31,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import es.upm.btb.madproject.room.AppDatabase
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class SecondActivity : AppCompatActivity() {
     private val TAG = "SecondActivity"
@@ -78,7 +75,7 @@ class SecondActivity : AppCompatActivity() {
 
             // Instanciar el adaptador con los datos de Room directamente
             val adapter = CoordinatesAdapter(this@SecondActivity, roomCoordinates)
-            listView.adapter = adapter  // Asignar el adaptador al ListView
+            coordinatesListView.adapter = adapter  // Asignar el adaptador al ListView
         }
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)

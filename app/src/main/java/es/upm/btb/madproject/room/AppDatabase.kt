@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [CoordinatesEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun coordinatesDao(): ICoordinatesDao
+    abstract fun coordinatesDao(): CoordinatesDao
 
     companion object {
         @Volatile

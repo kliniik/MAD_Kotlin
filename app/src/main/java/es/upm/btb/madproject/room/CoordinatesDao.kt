@@ -6,7 +6,7 @@ import androidx.room.Query
 import androidx.room.Update
 
 @Dao
-interface ICoordinatesDao {
+interface CoordinatesDao {
     @Insert
     suspend fun insert(coordinates: CoordinatesEntity)
 
