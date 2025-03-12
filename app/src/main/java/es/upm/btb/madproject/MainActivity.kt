@@ -1,43 +1,148 @@
 package es.upm.btb.madproject
 
-import android.content.Intent
-import android.widget.Button
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.util.Log
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import android.widget.Toast
-import android.app.AlertDialog
-import android.widget.EditText
-import java.io.File
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Switch
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import androidx.drawerlayout.widget.DrawerLayout
+import android.os.Build
 
+import android.provider.Settings
+
+import androidx.lifecycle.lifecycleScope
+import es.upm.btb.madproject.room.AppDatabase
+import es.upm.btb.madproject.room.CoordinatesEntity
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), LocationListener {
-    private val TAG = "btaMainActivity"
+
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var navigationView: NavigationView
     private lateinit var locationManager: LocationManager
-    private val locationPermissionCode = 2
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var locationSwitch: Switch
+    private val locationPermissionCode = 2
     private var latestLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        // set status bar color
+        //window.statusBarColor = getColor(R.color.primaryColor)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor));
+        }
 
+
+        // Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Initialize the DrawerLayout and NavigationView
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.navigation_view)
+
+        // Set up item selection listener for the Drawer
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                R.id.nav_open_street_map -> {
+                    val intent = Intent(this, OpenStreetMapActivity::class.java)
+                    latestLocation?.let {
+                        val bundle = Bundle()
+                        bundle.putParcelable("location", it)
+                        intent.putExtra("locationBundle", bundle)
+                    }
+                    startActivity(intent)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                R.id.nav_second_activity -> {
+                    startActivity(Intent(this, SecondActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                R.id.menu_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        // Bottom Navigation
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view)
+        bottomNavigationView.selectedItemId = R.id.navigation_home
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    true
+                }
+
+                R.id.navigation_map -> {
+                    val intent = Intent(this, OpenStreetMapActivity::class.java)
+                    latestLocation?.let {
+                        val bundle = Bundle()
+                        bundle.putParcelable("location", it)
+                        intent.putExtra("locationBundle", bundle)
+                    }
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+
+                R.id.navigation_list -> {
+                    startActivity(Intent(this, SecondActivity::class.java))
+                    finish()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+
+        // Location Manager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationSwitch = findViewById(R.id.locationSwitch)
+
+        // Restore saved state from SharedPreferences
+        val isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false)
+        locationSwitch.isChecked = isLocationEnabled
+        locationSwitch.text = if (isLocationEnabled) "Disable location" else "Enable location"
+
+        // Listen for location switch changes
         locationSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 locationSwitch.text = "Disable location"
@@ -46,167 +151,232 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 locationSwitch.text = "Enable location"
                 stopLocationUpdates()
             }
-        }
 
-        val osmButton: Button = findViewById(R.id.osmButton)
-        osmButton.setOnClickListener {
-            if (latestLocation != null) {
-                val intent = Intent(this, OpenStreetMapActivity::class.java)
-                val bundle = Bundle()
-                bundle.putParcelable("location", latestLocation)
-                intent.putExtra("locationBundle", bundle)
-                startActivity(intent)
-            }else{
-                Log.e(TAG, "Location not set yet.")
+            // Save the state IMMEDIATELY inside the listener
+            with(sharedPreferences.edit()) {
+                putBoolean("location_enabled", isChecked)
+                apply()
             }
         }
-        Log.d(TAG, "onCreate: Starting main activity.")
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // If location was previously enabled, start updates
+        if (isLocationEnabled) {
+            startLocationUpdates()
         }
 
-        // Check for location permissions
+        // Request location permissions if not granted
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                locationPermissionCode
-            )
+            requestLocationPermission()
         } else {
-            // The location is updated every 5000 milliseconds (or 5 seconds) and/or if the device moves more than 5 meters,
-            // whichever happens first
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+            Log.d("MainActivity", "Location permission already granted")
+            // Check if GPS is enabled
+            checkIfGpsIsEnabled()
         }
-
-        // Set up button click listener
-        val navigateButton: Button = findViewById(R.id.navigateButton)
-        navigateButton.setOnClickListener {
-            val intent = Intent(this, SecondActivity::class.java)
-            val bundle = Bundle()
-            bundle.putParcelable("location", latestLocation)
-            intent.putExtra("locationBundle", bundle)
-            startActivity(intent)
-        }
-
-        val userIdentifierButton: Button = findViewById(R.id.userIdentifierButton)
-        userIdentifierButton.setOnClickListener {
-            showUserIdentifierDialog()
-        }
-
-        // Check if the user identifier is already saved
-        val userIdentifier = getUserIdentifier()
-        if (userIdentifier == null) {
-            // If not, ask for it
-            showUserIdentifierDialog()
-        } else {
-            // If yes, use it or show it
-            Toast.makeText(this, "User ID: $userIdentifier", Toast.LENGTH_LONG).show()
-        }
-
     }
 
-    private fun showUserIdentifierDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Enter User Identifier")
-        val input = EditText(this)
-        val userIdentifier = getUserIdentifier()
-        if (userIdentifier != null) {
-            input.setText(userIdentifier)
+    override fun onResume() {
+        super.onResume()
+
+        // Restore the location state when returning to Home
+        val isLocationEnabled = sharedPreferences.getBoolean("location_enabled", false)
+        locationSwitch.isChecked = isLocationEnabled
+        if (isLocationEnabled) {
+            startLocationUpdates()
         }
-        builder.setView(input)
-        builder.setPositiveButton("OK") { dialog, which ->
-            val userInput = input.text.toString()
-            if (userInput.isNotBlank()) {
-                saveUserIdentifier(userInput)
-                Toast.makeText(this, "User ID saved: $userInput", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this, "User ID cannot be blank", Toast.LENGTH_LONG).show()
+    }
+
+
+    // Toolbar menu
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.top_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
             }
+
+            R.id.nav_open_street_map -> {
+                val intent = Intent(this, OpenStreetMapActivity::class.java)
+                latestLocation?.let {
+                    val bundle = Bundle()
+                    bundle.putParcelable("location", it)
+                    intent.putExtra("locationBundle", bundle)
+                }
+                startActivity(intent)
+                true
+            }
+
+            R.id.nav_second_activity -> {
+                startActivity(Intent(this, SecondActivity::class.java))
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
-        builder.setNegativeButton("Cancel") { dialog, which ->
-            Toast.makeText(this, "Thanks and goodbye!", Toast.LENGTH_LONG).show()
-            dialog.cancel()
-        }
-        builder.show()
-    }
-    private fun saveUserIdentifier(userIdentifier: String) {
-        val sharedPreferences = this.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-        sharedPreferences.edit().apply {
-            putString("userIdentifier", userIdentifier)
-            apply()
-        }
-    }
-    private fun getUserIdentifier(): String? {
-        val sharedPreferences = this.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("userIdentifier", null)
     }
 
+    // Location Updates
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                locationPermissionCode
-            )
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+            requestLocationPermission()
+            return
         }
+
+        Log.d("LOCATION_UPDATE", "Start GPS updates...")
+
+        // Ensure GPS provider is enabled
+        checkIfGpsIsEnabled()
+
+        // Make sure latest location is stored correctly
+        latestLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10f, this)
     }
+
+
     private fun stopLocationUpdates() {
         locationManager.removeUpdates(this)
     }
 
+    private fun checkIfGpsIsEnabled() {
+        val gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!gpsEnabled) {
+            Toast.makeText(this, "GPS is off, please turn it on", Toast.LENGTH_LONG).show()
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+        }
+    }
+
     override fun onLocationChanged(location: Location) {
         latestLocation = location
+        Log.d(
+            "Location",
+            "New Location: Lat: ${location.latitude}, Lon: ${location.longitude}, Alt: ${location.altitude}"
+        )
+
         val textView: TextView = findViewById(R.id.mainTextView)
-        val locationText = getString(R.string.location_text, location.latitude, location.longitude)
-        textView.text = locationText
-        saveCoordinatesToFile(location.latitude, location.longitude, location.altitude, System.currentTimeMillis())
-        val toastText = "New location: ${location.latitude}, ${location.longitude}, ${location.altitude}"
-        Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
-    }
-    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double, timestamp: Long) {
-        val fileName = "gps_coordinates.csv"
-        val file = File(filesDir, fileName)
-        val formattedLatitude = String.format("%.4f", latitude)
-        val formattedLongitude = String.format("%.4f", longitude)
-        val formattedAltitude = String.format("%.2f", altitude)
-        file.appendText("$timestamp;$formattedLatitude;$formattedLongitude;$formattedAltitude\n")
+        textView.text = "Lat: ${location.latitude}, Lon: ${location.longitude}"
+
+        //saveCoordinatesToFile(location.latitude, location.longitude, location.altitude)
+        saveCoordinatesToDatabase(
+            location.latitude,
+            location.longitude,
+            location.altitude,
+            location.time
+        )
     }
 
+    private fun saveCoordinatesToDatabase(
+        latitude: Double,
+        longitude: Double,
+        altitude: Double,
+        timestamp: Long
+    ) {
+        val coordinates = CoordinatesEntity(
+            timestamp = timestamp,
+            latitude = latitude,
+            longitude = longitude,
+            altitude = altitude
+        )
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch {
+            db.coordinatesDao().insert(coordinates)
+        }
+    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    private fun requestLocationPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) {
+            Toast.makeText(
+                this,
+                "We need access to your location to track your position",
+                Toast.LENGTH_LONG
+            ).show()
+            Log.d("MainActivity", "Permission rationale shown")
+        }
+
+        // Request the permissions
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            locationPermissionCode
+        )
+    }
+
+    // Handle the result of the permission request
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == locationPermissionCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+                startLocationUpdates()
+                Toast.makeText(this, "Location permissions granted", Toast.LENGTH_SHORT).show()
+                Log.d("MainActivity", "Permission granted")
+            } else {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
+                    Toast.makeText(
+                        this,
+                        "You need to manually enable location permissions in app settings",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri = android.net.Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                    Log.d("MainActivity", "Permission denied, navigating to settings")
+                } else {
+                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+                    Log.d("MainActivity", "Permission denied")
                 }
             }
         }
     }
-
-
-    @Deprecated("Deprecated in Java")
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-    override fun onProviderEnabled(provider: String) {}
-    override fun onProviderDisabled(provider: String) {}
 }
 
+//    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
+//        val file = File(filesDir, "gps_coordinates.csv")
+//        val timestamp = System.currentTimeMillis().toString()
+//        val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
+//
+//        try {
+//            file.appendText(formattedData)
+//            Log.d("FILE_WRITE", "GPS data saved: $formattedData")
+//        } catch (e: IOException) {
+//            Log.e("FILE_WRITE", "Error saving data: ${e.message}")
+//        }
+//    }
+//}

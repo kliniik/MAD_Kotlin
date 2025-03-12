@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt") // for Room database
+
 }
 
 android {
@@ -42,10 +44,22 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Dependence for osmdroid
     implementation(libs.osmdroid.android)
+
+    // Dependence Navigation Drawer
+    implementation(libs.material.v190)
+    implementation(libs.androidx.drawerlayout)
+
+    // Dependence for Bottom Navigation - already added in the material dependency??
+    //implementation "com.google.android.material:material:1.11.0"
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }
