@@ -43,6 +43,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
         private const val TAG = "OpenStreetMapActivity"
     }
 
+
     // Flood risk zones in Valencia
     private val gymkhanaCoords = listOf(
         GeoPoint(39.4699, -0.3774), // Valencia Zentrum
@@ -68,6 +69,24 @@ class OpenStreetMapActivity : AppCompatActivity() {
         "Turia Gardens",
         "Albufera Bridge",
         "Turia River Area"
+
+    // flood risk zones in Valencia
+    // private val gymkhanaCoords = listOf(
+//        GeoPoint(39.4699, -0.3774), // Near the Turia River, central Valencia
+//        GeoPoint(39.4636, -0.3783), // Near the Turia Bridge
+//        GeoPoint(39.4598, -0.3751), // Near the Turia Gardens
+//        GeoPoint(39.4573, -0.3710), // Near the Albufera Bridge
+//        GeoPoint(39.4605, -0.3845)  // Near parks and bike paths along the rive
+//
+//        GeoPoint(39.4705, -0.3768), // Bridge in the centre of Valencia
+//        GeoPoint(39.4665, -0.3755), // Turia garden - low-lying area
+//        GeoPoint(39.4622, -0.3740), // Close to oceanarium, historical flooding
+//        GeoPoint(39.4581, -0.3730), // Recreational areas close to river
+//        GeoPoint(39.4715, -0.3800), // High risk of flooding - old river channel
+//
+//
+//    )
+
     )
 
 //    private val gymkhanaDescriptions = listOf(
@@ -85,7 +104,6 @@ class OpenStreetMapActivity : AppCompatActivity() {
         "A bridge at risk of disruption from river overflows and high tides during storms.",
         "A floodplain susceptible to heavy river overflows, threatening infrastructure and land."
     )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,6 +184,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 TAG,
                 "onCreate: Location[${location.altitude}][${location.latitude}][${location.longitude}]"
             )
+
             GeoPoint(location.latitude, location.longitude)
             //GeoPoint(39.426714, -0.339140)
         } else {
@@ -178,6 +197,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
         map.controller.setZoom(14.0) // 🟢 Startzoom auf Valencia setzen
         map.controller.setCenter(gymkhanaCoords[0]) // 🟢 Kamera auf Valencia setzen
         map.setMultiTouchControls(true)
+
 
         // Markierungen hinzufügen
         addGymkhanaMarkers()
@@ -230,6 +250,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
                     val bundle = Bundle()
                     bundle.putParcelable("location", it)
                     intent.putExtra("locationBundle", bundle)
+
                 }
                 startActivity(intent)
                 true
