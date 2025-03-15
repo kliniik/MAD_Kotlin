@@ -240,10 +240,12 @@ class SecondActivity : AppCompatActivity() {
             // Klick-Listener für einzelne Koordinaten-Einträge
             view.setOnClickListener {
                 val intent = Intent(context, ThirdActivity::class.java).apply {
+                    putExtra("timestamp", item.getOrNull(0) ?: "0")
                     putExtra("latitude", item.getOrNull(1) ?: "N/A")
                     putExtra("longitude", item.getOrNull(2) ?: "N/A")
                     putExtra("altitude", item.getOrNull(3) ?: "N/A")
                 }
+                Log.d("SecondActivity", "Sent timestamp: ${item.getOrNull(0)}") // Log für Debugging
                 context.startActivity(intent)
             }
 

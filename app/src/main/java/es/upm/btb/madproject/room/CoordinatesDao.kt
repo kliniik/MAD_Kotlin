@@ -17,7 +17,7 @@ interface CoordinatesDao {
     fun getCount(): Int
 
     @Query("DELETE FROM coordinates WHERE timestamp = :timestamp")
-    fun deleteWithTimestamp(timestamp: Long)
+    suspend fun deleteWithTimestamp(timestamp: Long)
 
     @Update
     suspend fun updateCoordinate(coordinates: CoordinatesEntity)

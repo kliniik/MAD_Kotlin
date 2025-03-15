@@ -33,6 +33,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.views.overlay.Polyline
 
+import es.upm.btb.madproject.network.RetrofitClient
+import es.upm.btb.madproject.network.PegelalarmResponse
+import es.upm.btb.madproject.network.Station
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 class OpenStreetMapActivity : AppCompatActivity() {
     private lateinit var map: MapView
     private lateinit var drawerLayout: DrawerLayout
@@ -43,14 +50,13 @@ class OpenStreetMapActivity : AppCompatActivity() {
         private const val TAG = "OpenStreetMapActivity"
     }
 
-
     // Flood risk zones in Valencia
     private val gymkhanaCoords = listOf(
-        GeoPoint(39.4699, -0.3774), // Valencia Zentrum
+        GeoPoint(39.4699, -0.3774), // Valencia Center
         GeoPoint(39.4636, -0.3783), // Turia Bridge
         GeoPoint(39.4598, -0.3751), // Turia Gardens
         GeoPoint(39.4573, -0.3710), // Albufera Bridge
-        GeoPoint(39.4605, -0.3845)  // Turia-Flussgebiet
+        GeoPoint(39.4605, -0.3845)  // Turia river area
     )
 
 //    // Flood risk zones around the current Turia River
@@ -69,24 +75,6 @@ class OpenStreetMapActivity : AppCompatActivity() {
         "Turia Gardens",
         "Albufera Bridge",
         "Turia River Area"
-
-    // flood risk zones in Valencia
-    // private val gymkhanaCoords = listOf(
-//        GeoPoint(39.4699, -0.3774), // Near the Turia River, central Valencia
-//        GeoPoint(39.4636, -0.3783), // Near the Turia Bridge
-//        GeoPoint(39.4598, -0.3751), // Near the Turia Gardens
-//        GeoPoint(39.4573, -0.3710), // Near the Albufera Bridge
-//        GeoPoint(39.4605, -0.3845)  // Near parks and bike paths along the rive
-//
-//        GeoPoint(39.4705, -0.3768), // Bridge in the centre of Valencia
-//        GeoPoint(39.4665, -0.3755), // Turia garden - low-lying area
-//        GeoPoint(39.4622, -0.3740), // Close to oceanarium, historical flooding
-//        GeoPoint(39.4581, -0.3730), // Recreational areas close to river
-//        GeoPoint(39.4715, -0.3800), // High risk of flooding - old river channel
-//
-//
-//    )
-
     )
 
 //    private val gymkhanaDescriptions = listOf(
@@ -104,6 +92,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
         "A bridge at risk of disruption from river overflows and high tides during storms.",
         "A floodplain susceptible to heavy river overflows, threatening infrastructure and land."
     )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -164,7 +153,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
         }
 
 
-        // OpenStreetMap konfigurieren
+        // Configure OpenStreetMap
         //Configuration.getInstance().userAgentValue = packageName
         Configuration.getInstance().userAgentValue = "es.upm.btb.madproject"
         Configuration.getInstance()
@@ -184,7 +173,6 @@ class OpenStreetMapActivity : AppCompatActivity() {
                 TAG,
                 "onCreate: Location[${location.altitude}][${location.latitude}][${location.longitude}]"
             )
-
             GeoPoint(location.latitude, location.longitude)
             //GeoPoint(39.426714, -0.339140)
         } else {
@@ -194,14 +182,16 @@ class OpenStreetMapActivity : AppCompatActivity() {
 
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
-        map.controller.setZoom(14.0) // 🟢 Startzoom auf Valencia setzen
-        map.controller.setCenter(gymkhanaCoords[0]) // 🟢 Kamera auf Valencia setzen
+        map.controller.setZoom(14.0) // set inital zoom to Valencia
+        map.controller.setCenter(gymkhanaCoords[0]) // set camera on Valencia
         map.setMultiTouchControls(true)
 
+        // Get data from Pegelalarm and show markers
+        fetchWaterLevelMarkers()
 
-        // Markierungen hinzufügen
+        // add markers
         addGymkhanaMarkers()
-        // Route zwischen Markern zeichnen
+        // add route between markers
         drawPolyline()
 
         // load the coordinates from Room and show with the other marker
@@ -209,7 +199,7 @@ class OpenStreetMapActivity : AppCompatActivity() {
 
         // bottom navigation
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation_view)
-        bottomNavigationView.selectedItemId = R.id.navigation_map // Markiert "Karte" als aktiv
+        bottomNavigationView.selectedItemId = R.id.navigation_map // Marks map as active
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -250,7 +240,6 @@ class OpenStreetMapActivity : AppCompatActivity() {
                     val bundle = Bundle()
                     bundle.putParcelable("location", it)
                     intent.putExtra("locationBundle", bundle)
-
                 }
                 startActivity(intent)
                 true
@@ -280,6 +269,105 @@ class OpenStreetMapActivity : AppCompatActivity() {
         }
         map.invalidate()
     }
+
+    private var maxLevel: Double = 0.0  // Global maximum water level
+    private val allStations = mutableListOf<Station>()  // List for collected station data
+    private val waterLevelMarkers = mutableListOf<Marker>()
+
+    private fun fetchWaterLevelMarkers() {
+        val commonIds = listOf(
+            "jucar-0O01DQG2-es", "jucar-0E03DQG2-es", "jucar-0O04DQG0-es", "jucar-0O03DQG0-es",
+            "jucar-0O02DQG0-es", "jucar-0E04EVI1-es", "jucar-0E01EVI1-es", "jucar-7C01DQG2-es",
+            "jucar-7A02DQG1-es", "jucar-0R04DQG0-es", "jucar-7E03EVI1-es", "jucar-1E04EVI1-es",
+            "jucar-6E03EVI1-es", "jucar-6E02DQG1-es", "jucar-6A02DQG1-es", "jucar-9O03DQG4-es",
+            "jucar-1E07DQG4-es", "jucar-1E09DQG1-es", "jucar-1E06EVI1-es", "jucar-1E03DQG3-es"
+        )
+
+        allStations.clear()  // Reset station data
+        var responsesReceived = 0  // Track number of API responses
+
+        for (commonId in commonIds) {
+            RetrofitClient.api.getWaterLevelData(commonId).enqueue(object : Callback<PegelalarmResponse> {
+                override fun onResponse(call: Call<PegelalarmResponse>, response: Response<PegelalarmResponse>) {
+                    responsesReceived++
+
+                    if (response.isSuccessful) {
+                        response.body()?.let { data ->
+                            Log.d(TAG, "API data for $commonId: $data")
+
+                            if (data.payload.stations.isNotEmpty()) {
+                                allStations.addAll(data.payload.stations)  // Add stations to global list
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "API error for $commonId: ${response.code()} - ${response.message()}")
+                    }
+
+                    // If all responses are verarbeitet, set markers
+                    if (responsesReceived == commonIds.size) {
+                        updateWaterLevels()
+                    }
+                }
+
+                override fun onFailure(call: Call<PegelalarmResponse>, t: Throwable) {
+                    responsesReceived++
+                    Log.e(TAG, "API connection error for $commonId: ${t.message}")
+
+                    // If all responses are verarbeitet, set markers
+                    if (responsesReceived == commonIds.size) {
+                        updateWaterLevels()
+                    }
+                }
+            })
+        }
+    }
+
+    private fun updateWaterLevels() {
+        if (allStations.isEmpty()) return
+
+        // Set highest water level once for all stations
+        maxLevel = allStations.maxOfOrNull { it.data.firstOrNull()?.value ?: 0.0 } ?: 0.0
+
+        // If maxLevel = 0, all markers should be green
+        val thresholdGreen = if (maxLevel > 0) maxLevel / 3 else Double.MAX_VALUE
+        val thresholdYellow = if (maxLevel > 0) 2 * maxLevel / 3 else Double.MAX_VALUE
+
+        Log.d(TAG, "Total highest water level: $maxLevel cm")
+        Log.d(TAG, "Threshold for green: $thresholdGreen cm, Threshold for yellow: $thresholdYellow cm")
+
+        addWaterLevelMarkers(thresholdGreen, thresholdYellow)
+    }
+
+    private fun addWaterLevelMarkers(thresholdGreen: Double, thresholdYellow: Double) {
+        // Remove only water level markers
+        for (marker in waterLevelMarkers) {
+            map.overlays.remove(marker)
+        }
+        waterLevelMarkers.clear()  // Empty list
+
+        for (station in allStations) {
+            val currentWaterLevel = station.data.firstOrNull()?.value ?: 0.0
+
+            Log.d(TAG, "Station: ${station.name}, Water level: $currentWaterLevel cm")
+
+            val marker = Marker(map)
+            marker.position = GeoPoint(station.latitude, station.longitude)
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            marker.title = station.name
+            marker.snippet = "Water level: ${currentWaterLevel}cm\nGlobal maximum value: ${maxLevel}cm"
+
+            // Color depending on threshold values
+            marker.icon = when {
+                currentWaterLevel > thresholdYellow -> vectorToBitmapDrawable(this, R.drawable.red_marker, 50, 50)
+                currentWaterLevel > thresholdGreen -> vectorToBitmapDrawable(this, R.drawable.yellow_marker, 50, 50)
+                else -> vectorToBitmapDrawable(this, R.drawable.green_marker, 50, 50)
+            }
+
+            map.overlays.add(marker)
+        }
+        map.invalidate()
+    }
+
 
     private fun drawPolyline() {
         val polyline = Polyline()

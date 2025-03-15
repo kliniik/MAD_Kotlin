@@ -49,9 +49,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
         // set status bar color
         //window.statusBarColor = getColor(R.color.primaryColor)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor))
         }
-
 
         // Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -194,7 +193,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
     }
 
-
     // Toolbar menu
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_menu, menu)
@@ -287,12 +285,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         )
     }
 
-    private fun saveCoordinatesToDatabase(
-        latitude: Double,
-        longitude: Double,
-        altitude: Double,
-        timestamp: Long
-    ) {
+    private fun saveCoordinatesToDatabase(latitude: Double, longitude: Double, altitude: Double, timestamp: Long) {
         val coordinates = CoordinatesEntity(
             timestamp = timestamp,
             latitude = latitude,
@@ -366,17 +359,3 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
     }
 }
-
-//    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
-//        val file = File(filesDir, "gps_coordinates.csv")
-//        val timestamp = System.currentTimeMillis().toString()
-//        val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
-//
-//        try {
-//            file.appendText(formattedData)
-//            Log.d("FILE_WRITE", "GPS data saved: $formattedData")
-//        } catch (e: IOException) {
-//            Log.e("FILE_WRITE", "Error saving data: ${e.message}")
-//        }
-//    }
-//}

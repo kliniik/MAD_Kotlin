@@ -1,6 +1,7 @@
 package es.upm.btb.madproject
 
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -16,6 +17,8 @@ import es.upm.btb.madproject.room.CoordinatesEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
+import java.util.Locale
 
 class ThirdActivity : AppCompatActivity() {
     private val TAG = "btaThirdActivity"
@@ -43,18 +46,27 @@ class ThirdActivity : AppCompatActivity() {
         etAltitude = findViewById(R.id.etAltitude)
 
         // Pobranie danych z Intent
-        val timestamp = intent.getStringExtra("timestamp")
+        val timestampString = intent.getStringExtra("timestamp")
         val latitude = intent.getStringExtra("latitude")
         val longitude = intent.getStringExtra("longitude")
         val altitude = intent.getStringExtra("altitude")
 
+        Log.d(TAG, "Intent Data -> Timestamp: $timestampString, Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
+
+        val timestamp: Long? = timestampString?.toLongOrNull()
+
+        // Falls `timestamp` nicht gültig ist, logge den Fehler
+        if (timestamp == null) {
+            Log.e(TAG, "FEHLER: Der Timestamp konnte nicht in Long umgewandelt werden! Wert aus Intent: $timestampString")
+        }
+
         Log.d(TAG, "Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
 
         // Przypisanie danych do EditText
-        etTimestamp.setText(timestamp)
-        etLatitude.setText(latitude)
-        etLongitude.setText(longitude)
-        etAltitude.setText(altitude)
+        etTimestamp.setText(timestamp?.let { convertTimestamp(it) } ?: "Ungültiger Wert")
+        etLatitude.setText(latitude ?: "N/A")
+        etLongitude.setText(longitude ?: "N/A")
+        etAltitude.setText(altitude ?: "N/A")
 
         // Przycisk powrotu do SecondActivity
         findViewById<Button>(R.id.buttonToSecond).setOnClickListener {
@@ -64,15 +76,18 @@ class ThirdActivity : AppCompatActivity() {
 
         // Przycisk usunięcia koordynatu
         findViewById<Button>(R.id.buttonDelete).setOnClickListener {
-            if (!timestamp.isNullOrEmpty()) {
-                showDeleteConfirmationDialog(timestamp.toLong())
-            }
+            timestamp?.let { showDeleteConfirmationDialog(it) }
         }
 
         // Przycisk aktualizacji koordynatu
         findViewById<Button>(R.id.buttonUpdate).setOnClickListener {
             showUpdateConfirmationDialog()
         }
+    }
+
+    private fun convertTimestamp(timestamp: Long): String {
+        val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+        return formatter.format(Date(timestamp))
     }
 
     private fun showDeleteConfirmationDialog(timestamp: Long) {
@@ -95,8 +110,15 @@ class ThirdActivity : AppCompatActivity() {
     private fun deleteCoordinate(timestamp: Long) {
         val db = AppDatabase.getDatabase(this)
         lifecycleScope.launch(Dispatchers.IO) {
-            db.coordinatesDao().deleteWithTimestamp(timestamp)
-            Log.d(TAG, "Coordinate with timestamp $timestamp deleted.")
+            val coordinate = db.coordinatesDao().getCoordinateByTimestamp(timestamp)
+
+            if (coordinate != null) {
+                db.coordinatesDao().deleteWithTimestamp(timestamp)
+                Log.d(TAG, "Coordinate with timestamp $timestamp deleted.")
+            } else {
+                Log.e(TAG, "No coordinate found with timestamp $timestamp. Deletion failed.")
+            }
+
             withContext(Dispatchers.Main) {
                 startActivity(Intent(this@ThirdActivity, SecondActivity::class.java))
                 finish()
@@ -124,7 +146,7 @@ class ThirdActivity : AppCompatActivity() {
     private fun updateCoordinate() {
         val db = AppDatabase.getDatabase(this)
         lifecycleScope.launch(Dispatchers.IO) {
-            val timestamp = etTimestamp.text.toString().toLongOrNull()
+            val timestamp = intent.getStringExtra("timestamp")?.toLongOrNull()
             if (timestamp == null) {
                 Log.e(TAG, "Invalid timestamp value")
                 return@launch
