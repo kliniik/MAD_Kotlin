@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <!-- main TextView -->
+        <!-- Toolbar TextView -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -28,27 +28,17 @@
             app:title="EcoFlood"
             app:titleTextColor="@color/textColorPrimary" />
 
+        <!-- Main Title -->
         <TextView
             android:id="@+id/mainTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="40dp"
             android:text="Welcome to EcoFlood!"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        <TextView
-            android:id="@+id/weatherTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Load weather data..."
-            android:textSize="16sp"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainTextView"
-            android:paddingTop="60dp"
-            />
+            android:layout_marginTop="24dp"/>
 
         <!-- Switch for location -->
         <Switch
@@ -62,6 +52,46 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainTextView" />
 
+        <!-- Flood picture -->
+        <ImageView
+            android:id="@+id/imageFlood"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/locationSwitch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Station with highest water level -->
+        <TextView
+            android:id="@+id/tvHighestStation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Highest station: Charging..."
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toBottomOf="@id/imageFlood"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Thresholds -->
+        <TextView
+            android:id="@+id/tvThresholds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thresholds: Loading..."
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toBottomOf="@id/tvHighestStation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"/>
 
         <!-- Bottom Navigation Bar -->
         <com.google.android.material.bottomnavigation.BottomNavigationView

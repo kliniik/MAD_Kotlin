@@ -23,14 +23,20 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.drawerlayout.widget.DrawerLayout
 import android.os.Build
-
 import android.provider.Settings
 
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import es.upm.btb.madproject.room.AppDatabase
 import es.upm.btb.madproject.room.CoordinatesEntity
 import kotlinx.coroutines.launch
 import es.upm.btb.madproject.utils.PreferencesManager
+import es.upm.btb.madproject.network.RetrofitClient
+import es.upm.btb.madproject.network.PegelalarmResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
@@ -49,6 +55,14 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val apiKey = PreferencesManager.getInstance().getApiKey()
 
         setContentView(R.layout.activity_main)
+
+        fetchHighestWaterLevel()
+        val floodImageUrl = "https://www.science.org/do/10.1126/science.abl5271/abs/germanyfloods_1280x720.jpg"
+
+        Glide.with(this)
+            .load(floodImageUrl)
+            .placeholder(R.drawable.icon_placeholder)
+            .into(findViewById(R.id.imageFlood))
 
         // set status bar color
         //window.statusBarColor = getColor(R.color.primaryColor)
@@ -362,4 +376,64 @@ class MainActivity : AppCompatActivity(), LocationListener {
             }
         }
     }
+
+    private fun fetchHighestWaterLevel() {
+        val commonIds = listOf(
+            "jucar-0O01DQG2-es", "jucar-0E03DQG2-es", "jucar-0O04DQG0-es", "jucar-0O03DQG0-es",
+            "jucar-0O02DQG0-es", "jucar-0E04EVI1-es", "jucar-0E01EVI1-es", "jucar-7C01DQG2-es",
+            "jucar-7A02DQG1-es", "jucar-0R04DQG0-es", "jucar-7E03EVI1-es", "jucar-1E04EVI1-es",
+            "jucar-6E03EVI1-es", "jucar-6E02DQG1-es", "jucar-6A02DQG1-es", "jucar-9O03DQG4-es",
+            "jucar-1E07DQG4-es", "jucar-1E09DQG1-es", "jucar-1E06EVI1-es", "jucar-1E03DQG3-es"
+        )
+
+        var maxLevel = 0.0
+        var highestStation = "Unbekannt"
+        var responsesReceived = 0
+
+        for (commonId in commonIds) {
+            RetrofitClient.api.getWaterLevelData(commonId).enqueue(object : Callback<PegelalarmResponse> {
+                override fun onResponse(call: Call<PegelalarmResponse>, response: Response<PegelalarmResponse>) {
+                    responsesReceived++
+                    if (response.isSuccessful) {
+                        response.body()?.let { data ->
+                            if (data.payload.stations.isNotEmpty()) {
+                                val station = data.payload.stations[0]
+                                val waterLevel = station.data.firstOrNull()?.value ?: 0.0
+                                if (waterLevel > maxLevel) {
+                                    maxLevel = waterLevel
+                                    highestStation = station.name
+                                }
+                            }
+                        }
+                    }
+                    if (responsesReceived == commonIds.size) {
+                        updateUI(maxLevel, highestStation)
+                    }
+                }
+
+                override fun onFailure(call: Call<PegelalarmResponse>, t: Throwable) {
+                    responsesReceived++
+                    if (responsesReceived == commonIds.size) {
+                        updateUI(maxLevel, highestStation)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun updateUI(maxLevel: Double, highestStation: String) {
+        val thresholdGreen = if (maxLevel > 0) maxLevel / 3 else 0.0
+        val thresholdYellow = if (maxLevel > 0) 2 * maxLevel / 3 else 0.0
+
+        val format = "%.2f"  // Rundet auf 2 Nachkommastellen
+        val formattedGreen = String.format(Locale.ENGLISH, format, thresholdGreen)
+        val formattedYellow = String.format(Locale.ENGLISH, format, thresholdYellow)
+        val formattedMax = String.format(Locale.ENGLISH, format, maxLevel)
+
+        runOnUiThread {
+            findViewById<TextView>(R.id.tvHighestStation).text = "Station with highest water level: \n$highestStation ($formattedMax cm)"
+            findViewById<TextView>(R.id.tvThresholds).text = "Thresholds: \n🟢 $formattedGreen cm, 🟡 $formattedYellow cm, 🔴 $formattedMax cm"
+        }
+    }
+
 }

@@ -66,4 +66,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    // Dependencies for glide
+    implementation(libs.glide)
+    kapt(libs.compiler)
 }
