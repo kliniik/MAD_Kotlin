@@ -30,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import es.upm.btb.madproject.room.AppDatabase
 import es.upm.btb.madproject.room.CoordinatesEntity
 import kotlinx.coroutines.launch
+import es.upm.btb.madproject.utils.PreferencesManager
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
@@ -44,6 +45,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        PreferencesManager.init(this)  // Initialisiert die Preferences
+        val apiKey = PreferencesManager.getInstance().getApiKey()
+
         setContentView(R.layout.activity_main)
 
         // set status bar color

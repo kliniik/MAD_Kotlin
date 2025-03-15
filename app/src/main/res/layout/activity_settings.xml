@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
-    <!-- Eingabefeld für die User-ID -->
+    <!-- Input field for the user ID -->
     <EditText
         android:id="@+id/editTextUserIdentifier"
         android:layout_width="0dp"
@@ -25,15 +25,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Speichern-Button -->
+    <!-- Save button user name -->
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="Save User Name"
         android:backgroundTint="@color/buttonColor"
         android:textColor="@color/textColorPrimary"
         app:layout_constraintTop_toBottomOf="@id/editTextUserIdentifier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Input field for the API key -->
+    <EditText
+        android:id="@+id/etApiKey"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:drawable/editbox_background"
+        android:backgroundTint="@color/textColorPrimary"
+        android:hint="Enter API Key"
+        android:padding="12dp"
+        android:textColor="@color/primaryColor"
+        android:textColorHint="@color/primaryColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonSave" />
+
+
+    <!-- Save button for the API key -->
+    <Button
+        android:id="@+id/btnSaveApiKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save API Key"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/textColorPrimary"
+        app:layout_constraintTop_toBottomOf="@id/etApiKey"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>

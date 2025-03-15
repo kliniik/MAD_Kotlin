@@ -9,8 +9,11 @@ import android.content.Context
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import es.upm.btb.madproject.utils.PreferencesManager
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var preferencesManager: PreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -43,6 +46,20 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "User ID cannot be blank!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        preferencesManager = PreferencesManager(this)
+
+        val etApiKey = findViewById<EditText>(R.id.etApiKey)
+        val btnSave = findViewById<Button>(R.id.btnSaveApiKey)
+
+        // API-Key anzeigen
+        etApiKey.setText(preferencesManager.getApiKey())
+
+        // Speichern
+        btnSave.setOnClickListener {
+            val newApiKey = etApiKey.text.toString()
+            preferencesManager.setApiKey(newApiKey)
         }
     }
 }

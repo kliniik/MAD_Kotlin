@@ -9,7 +9,23 @@ class PreferencesManager(context: Context) {
 
     companion object {
         private const val API_KEY = "api_key"
+        // API key only valid until 15 July 2025
         private const val DEFAULT_API_KEY = "https://api.pegelalarm.at/api/station/1.0/a/lara_gerlach/"
+
+        @Volatile
+        private var INSTANCE: PreferencesManager? = null
+
+        fun init(context: Context) {  // Initialisierungsmethode
+            synchronized(this) {
+                if (INSTANCE == null) {
+                    INSTANCE = PreferencesManager(context)
+                }
+            }
+        }
+
+        fun getInstance(): PreferencesManager {
+            return INSTANCE ?: throw IllegalStateException("PreferencesManager wurde nicht initialisiert!")
+        }
     }
 
     fun getApiKey(): String {
