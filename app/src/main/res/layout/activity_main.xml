@@ -50,7 +50,12 @@
             android:text="Enable Location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainTextView" />
+            app:layout_constraintTop_toBottomOf="@id/mainTextView"
+
+            android:thumbTint="@color/colorSwitchThumb"
+            android:trackTint="@color/colorSwitchTrack"
+            android:scaleX="0.9"
+            android:scaleY="0.9" />
 
         <!-- Flood picture -->
         <ImageView

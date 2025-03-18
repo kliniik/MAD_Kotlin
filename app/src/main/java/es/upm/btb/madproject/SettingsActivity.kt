@@ -60,6 +60,8 @@ class SettingsActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_list -> {
+                    startActivity(Intent(this, SecondActivity::class.java))
+                    finish()
                     true // Bereits in "Liste", also nichts tun
                 }
                 else -> false
