@@ -40,9 +40,7 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var navigationView: NavigationView
     private lateinit var locationManager: LocationManager
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var locationSwitch: Switch
@@ -70,50 +68,16 @@ class MainActivity : AppCompatActivity(), LocationListener {
             getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor))
         }
 
+        // set navigation bar color
+        // Zmiana koloru paska nawigacji (dolnego paska nawigacji)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setNavigationBarColor(resources.getColor(R.color.colorBottomNavBackground))
+        }
+
+
         // Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        // Initialize the DrawerLayout and NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
-
-        // Set up item selection listener for the Drawer
-        navigationView.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.nav_open_street_map -> {
-                    val intent = Intent(this, OpenStreetMapActivity::class.java)
-                    latestLocation?.let {
-                        val bundle = Bundle()
-                        bundle.putParcelable("location", it)
-                        intent.putExtra("locationBundle", bundle)
-                    }
-                    startActivity(intent)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.nav_second_activity -> {
-                    startActivity(Intent(this, SecondActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.menu_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                else -> false
-            }
-        }
 
         // Bottom Navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
@@ -220,29 +184,16 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-
-            R.id.nav_open_street_map -> {
-                val intent = Intent(this, OpenStreetMapActivity::class.java)
-                latestLocation?.let {
-                    val bundle = Bundle()
-                    bundle.putParcelable("location", it)
-                    intent.putExtra("locationBundle", bundle)
-                }
+                // Przejdź do aktywności ustawień
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
-
-            R.id.nav_second_activity -> {
-                startActivity(Intent(this, SecondActivity::class.java))
-                true
-            }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+
 
     // Location Updates
     private fun startLocationUpdates() {
@@ -387,7 +338,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         )
 
         var maxLevel = 0.0
-        var highestStation = "Unbekannt"
+        var highestStation = "Unknown"
         var responsesReceived = 0
 
         for (commonId in commonIds) {

@@ -7,67 +7,91 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
-    <!-- Input field for the user ID -->
+    <!-- Toolbar TextView -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/primaryColor"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/PopupThemeWhiteText"
+        app:title="Settings"
+        app:titleTextColor="@color/textColorPrimary" />
+
+
     <EditText
         android:id="@+id/editTextUserIdentifier"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="92dp"
         android:layout_marginEnd="16dp"
-        android:background="@android:drawable/editbox_background"
-        android:backgroundTint="@color/textColorPrimary"
-        android:hint="Enter User ID"
-        android:padding="12dp"
-        android:textColor="@color/primaryColor"
-        android:textColorHint="@color/primaryColor"
+        android:hint="Enter User Identifier"
+        android:minHeight="48dp"
+        android:paddingVertical="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Save button user name -->
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save User Name"
+        android:layout_marginTop="24dp"
         android:backgroundTint="@color/buttonColor"
+        android:text="Save User ID"
         android:textColor="@color/textColorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/editTextUserIdentifier"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextUserIdentifier" />
 
-    <!-- Input field for the API key -->
     <EditText
         android:id="@+id/etApiKey"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
-        android:background="@android:drawable/editbox_background"
-        android:backgroundTint="@color/textColorPrimary"
         android:hint="Enter API Key"
-        android:padding="12dp"
-        android:textColor="@color/primaryColor"
-        android:textColorHint="@color/primaryColor"
+        android:minHeight="48dp"
+        android:paddingVertical="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buttonSave" />
 
-
-    <!-- Save button for the API key -->
     <Button
         android:id="@+id/btnSaveApiKey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save API Key"
+        android:layout_marginTop="24dp"
         android:backgroundTint="@color/buttonColor"
+        android:text="Save API Key"
         android:textColor="@color/textColorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/etApiKey"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etApiKey" />
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:backgroundTint="@color/colorBottomNavBackground"
+        app:itemIconTint="@drawable/nav_item_color_selector"
+        app:itemTextColor="@drawable/nav_item_color_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        app:rippleColor="@color/colorBottomNavRipple" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

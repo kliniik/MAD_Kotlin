@@ -12,8 +12,8 @@
     <color name="buttonColor">#004080</color>  <!-- mid blue for buttons -->
 
     <!-- Bottom Navigation Bar -->
-    <color name="colorBottomNavItemSelected">#FF9800</color> <!-- Pomarańczowy dla wybranych elementów -->
-    <color name="colorBottomNavItemUnselected">#DEE3E4</color> <!-- Jasnoszary dla niewybranych elementów -->
-    <color name="colorBottomNavBackground">#003366</color> <!-- Dark blue dla tła -->
-    <color name="colorBottomNavRipple">#FF4081</color> <!-- Fala podczas kliknięcia -->
+    <color name="colorBottomNavItemSelected">#4A90E2</color> <!-- Błękitny dla wybranego elementu -->
+    <color name="colorBottomNavItemUnselected">#A9A9A9</color> <!-- Jasnoszary dla niewybranych elementów -->
+    <color name="colorBottomNavBackground">#003366</color> <!-- Granatowy dla tła -->
+    <color name="colorBottomNavRipple">#90CAF9</color> <!-- Błękitny dla efektu fali przy kliknięciu -->
 </resources>

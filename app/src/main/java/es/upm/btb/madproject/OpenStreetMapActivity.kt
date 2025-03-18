@@ -42,8 +42,8 @@ import retrofit2.Response
 
 class OpenStreetMapActivity : AppCompatActivity() {
     private lateinit var map: MapView
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
+//    private lateinit var drawerLayout: DrawerLayout
+//    private lateinit var navigationView: NavigationView
     private var latestLocation: Location? = null
 
     companion object {
@@ -99,8 +99,8 @@ class OpenStreetMapActivity : AppCompatActivity() {
         setContentView(R.layout.activity_open_street_map)
 
         // Initialize the DrawerLayout and NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
+//        drawerLayout = findViewById(R.id.drawer_layout)
+//        navigationView = findViewById(R.id.navigation_view)
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -119,38 +119,44 @@ class OpenStreetMapActivity : AppCompatActivity() {
             getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor));
         }
 
-        // Set up item selection listener for the Drawer
-        navigationView.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.nav_open_street_map -> {
-                    val intent = Intent(this, OpenStreetMapActivity::class.java)
-                    latestLocation?.let {
-                        val bundle = Bundle()
-                        bundle.putParcelable("location", it)
-                        intent.putExtra("locationBundle", bundle)
-                    }
-                    startActivity(intent)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.nav_second_activity -> {
-                    startActivity(Intent(this, SecondActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.menu_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                else -> false
-            }
+        // set navigation bar color
+        // Zmiana koloru paska nawigacji (dolnego paska nawigacji)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setNavigationBarColor(resources.getColor(R.color.colorBottomNavBackground))
         }
+
+//        // Set up item selection listener for the Drawer
+//        navigationView.setNavigationItemSelectedListener { item ->
+//            when (item.itemId) {
+//                R.id.navigation_home -> {
+//                    startActivity(Intent(this, MainActivity::class.java))
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                    true
+//                }
+//                R.id.nav_open_street_map -> {
+//                    val intent = Intent(this, OpenStreetMapActivity::class.java)
+//                    latestLocation?.let {
+//                        val bundle = Bundle()
+//                        bundle.putParcelable("location", it)
+//                        intent.putExtra("locationBundle", bundle)
+//                    }
+//                    startActivity(intent)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                    true
+//                }
+//                R.id.nav_second_activity -> {
+//                    startActivity(Intent(this, SecondActivity::class.java))
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                    true
+//                }
+//                R.id.menu_settings -> {
+//                    startActivity(Intent(this, SettingsActivity::class.java))
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+//                    true
+//                }
+//                else -> false
+//            }
+//        }
 
 
         // Configure OpenStreetMap
@@ -180,11 +186,14 @@ class OpenStreetMapActivity : AppCompatActivity() {
             GeoPoint(39.426714, -0.339140) // Valencia, Spain
         }
 
+
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
-        map.controller.setZoom(14.0) // set inital zoom to Valencia
-        map.controller.setCenter(gymkhanaCoords[0]) // set camera on Valencia
+        map.controller.setZoom(18.0) // set inital zoom to Valencia
+        map.controller.setCenter(startPoint)
+        //map.controller.setCenter(gymkhanaCoords[0]) // set camera on Valencia
         map.setMultiTouchControls(true)
+
 
         // Get data from Pegelalarm and show markers
         fetchWaterLevelMarkers()
@@ -231,30 +240,42 @@ class OpenStreetMapActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-            R.id.nav_open_street_map -> {
-                val intent = Intent(this, OpenStreetMapActivity::class.java)
-                latestLocation?.let {
-                    val bundle = Bundle()
-                    bundle.putParcelable("location", it)
-                    intent.putExtra("locationBundle", bundle)
-                }
+                // Przejdź do aktywności ustawień
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
-                true
-            }
-            R.id.nav_second_activity -> {
-                startActivity(Intent(this, SecondActivity::class.java))
-                true
-            }
-            R.id.nav_home -> {
-                startActivity(Intent(this, MainActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.menu_settings -> {
+//                startActivity(Intent(this, SettingsActivity::class.java))
+//                true
+//            }
+//            R.id.nav_open_street_map -> {
+//                val intent = Intent(this, OpenStreetMapActivity::class.java)
+//                latestLocation?.let {
+//                    val bundle = Bundle()
+//                    bundle.putParcelable("location", it)
+//                    intent.putExtra("locationBundle", bundle)
+//                }
+//                startActivity(intent)
+//                true
+//            }
+//            R.id.nav_second_activity -> {
+//                startActivity(Intent(this, SecondActivity::class.java))
+//                true
+//            }
+//            R.id.nav_home -> {
+//                startActivity(Intent(this, MainActivity::class.java))
+//                true
+//            }
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
 
     private fun addGymkhanaMarkers() {
