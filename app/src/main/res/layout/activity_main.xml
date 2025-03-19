@@ -28,7 +28,21 @@
             app:title="EcoFlood"
             app:titleTextColor="@color/textColorPrimary" />
 
-        <!-- Main Title -->
+    <!-- User Name -->
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="User Name"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
+    <!-- Main Title -->
         <TextView
             android:id="@+id/mainTextView"
             android:layout_width="wrap_content"
@@ -38,7 +52,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp"/>
+            android:layout_marginTop="66dp"/>
 
         <!-- Switch for location -->
         <Switch

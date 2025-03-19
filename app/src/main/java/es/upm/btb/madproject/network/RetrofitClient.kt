@@ -8,8 +8,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private val preferencesManager: PreferencesManager by lazy {
-        PreferencesManager.getInstance()
+    private lateinit var preferencesManager: PreferencesManager
+
+    fun initPreferences(context: Context) {
+        preferencesManager = PreferencesManager(context)
     }
 
     private val client = OkHttpClient.Builder()
@@ -23,7 +25,7 @@ object RetrofitClient {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.pegelalarm.at/api/station/1.0/a/lara_gerlach/")  // Ersetze mit deiner API-BaseURL
+        .baseUrl("https://api.pegelalarm.at/api/station/1.0/a/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()

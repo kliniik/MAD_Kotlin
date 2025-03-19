@@ -7,4 +7,9 @@
     <string name="title_config">Settings</string>
     <string name="navigation_drawer_open">Open Nav</string>
     <string name="navigation_drawer_close">Close Nav</string>
+
+    <string name="signed_in">Signed in</string>
+    <string name="signed_out">Signed out</string>
+    <string name="signed_cancelled">Signed in cancelled</string>
+
 </resources>

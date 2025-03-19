@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "165256621798",
+    "project_id": "mad-upm",
+    "storage_bucket": "mad-upm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165256621798:android:22c585608f591205d19527",
+        "android_client_info": {
+          "package_name": "es.upm.btb.madproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165256621798-vs9711527u9o2hgr90bap6psht15b763.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.upm.btb.madproject",
+            "certificate_hash": "707f9dc04902e77d2952698e43bed546bc706673"
+          }
+        },
+        {
+          "client_id": "165256621798-m5q9v3i1g0van4g5ldgu6si9q2145116.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZEazXEbIscZxvUJYh0LMF9eblfyUzZPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165256621798-m5q9v3i1g0van4g5ldgu6si9q2145116.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

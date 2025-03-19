@@ -18,10 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.view.GravityCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
-import androidx.drawerlayout.widget.DrawerLayout
 import android.os.Build
 import android.provider.Settings
 
@@ -38,6 +35,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
 
+import com.google.firebase.auth.FirebaseAuth
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
+import android.app.Activity
+
 class MainActivity : AppCompatActivity(), LocationListener {
 
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -47,9 +49,17 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private val locationPermissionCode = 2
     private var latestLocation: Location? = null
 
+    private lateinit var auth: FirebaseAuth
+    // companion is the same than an static object in java
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val RC_SIGN_IN = 123
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PreferencesManager.init(this)  // Initialisiert die Preferences
+        RetrofitClient.initPreferences(this)
+        PreferencesManager.init(this)  // Initializes preferences
         val apiKey = PreferencesManager.getInstance().getApiKey()
 
         setContentView(R.layout.activity_main)
@@ -68,8 +78,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
             getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor))
         }
 
-        // set navigation bar color
-        // Zmiana koloru paska nawigacji (dolnego paska nawigacji)
+        // Change the color of the navigation bar (bottom navigation bar)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setNavigationBarColor(resources.getColor(R.color.colorBottomNavBackground))
         }
@@ -162,6 +171,10 @@ class MainActivity : AppCompatActivity(), LocationListener {
             // Check if GPS is enabled
             checkIfGpsIsEnabled()
         }
+
+        // Init authentication flow
+        launchSignInFlow()
+
     }
 
     override fun onResume() {
@@ -173,6 +186,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
         if (isLocationEnabled) {
             startLocationUpdates()
         }
+
+        updateUIWithUsername()
     }
 
     // Toolbar menu
@@ -184,16 +199,71 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
-                // Przejdź do aktywności ustawień
+                // Go to settings activity
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
+                true
+            }
+            R.id.action_logout -> {
+                logout()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+            if (resultCode == Activity.RESULT_OK) {
+                // user login succeeded
+                val user = FirebaseAuth.getInstance().currentUser
+                Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "onActivityResult " + getString(R.string.signed_in))
+            } else {
+                // user login failed
+                Log.e(TAG, "Error starting auth session: ${response?.error?.errorCode}")
+                Toast.makeText(this, R.string.signed_cancelled, Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+    }
 
+    private fun updateUIWithUsername() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userNameTextView: TextView = findViewById(R.id.userNameTextView)
+        user?.let {
+            val name = user.displayName ?: "No Name"
+            userNameTextView.text = "\uD83D\uDCA7 " + name + " \uD83D\uDCA7"
+        }
+    }
+
+    private fun launchSignInFlow() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build(),
+            RC_SIGN_IN
+        )
+    }
+    private fun logout() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                // Restart activity after finishing
+                val intent = Intent(this, MainActivity::class.java)
+                // Clean back stack so that user cannot retake activity after logout
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+    }
 
     // Location Updates
     private fun startLocationUpdates() {
@@ -376,7 +446,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val thresholdGreen = if (maxLevel > 0) maxLevel / 3 else 0.0
         val thresholdYellow = if (maxLevel > 0) 2 * maxLevel / 3 else 0.0
 
-        val format = "%.2f"  // Rundet auf 2 Nachkommastellen
+        val format = "%.2f"
         val formattedGreen = String.format(Locale.ENGLISH, format, thresholdGreen)
         val formattedYellow = String.format(Locale.ENGLISH, format, thresholdYellow)
         val formattedMax = String.format(Locale.ENGLISH, format, maxLevel)

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class ThirdActivity : AppCompatActivity() {
     private val TAG = "btaThirdActivity"
@@ -32,6 +35,7 @@ class ThirdActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_third)
+        Log.d("FirebaseTest", "Firebase initialized: ${FirebaseDatabase.getInstance().reference}")
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -39,13 +43,13 @@ class ThirdActivity : AppCompatActivity() {
             insets
         }
 
-        // Pobranie referencji do EditText
+        // Retrieve references to EditText fields
         etTimestamp = findViewById(R.id.etTimestamp)
         etLatitude = findViewById(R.id.etLatitude)
         etLongitude = findViewById(R.id.etLongitude)
         etAltitude = findViewById(R.id.etAltitude)
 
-        // Pobranie danych z Intent
+        // Retrieve data from Intent
         val timestampString = intent.getStringExtra("timestamp")
         val latitude = intent.getStringExtra("latitude")
         val longitude = intent.getStringExtra("longitude")
@@ -54,34 +58,62 @@ class ThirdActivity : AppCompatActivity() {
         Log.d(TAG, "Intent Data -> Timestamp: $timestampString, Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
 
         val timestamp: Long? = timestampString?.toLongOrNull()
+        Log.d("IntentDebug", "Timestamp received: $timestamp")
 
-        // Falls `timestamp` nicht gültig ist, logge den Fehler
+        // Log error, if `timestamp` isn't valid
         if (timestamp == null) {
-            Log.e(TAG, "FEHLER: Der Timestamp konnte nicht in Long umgewandelt werden! Wert aus Intent: $timestampString")
+            Log.e(TAG, "ERROR: The timestamp couldn't be converted into long! Value from Intent: $timestampString")
         }
 
         Log.d(TAG, "Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
 
-        // Przypisanie danych do EditText
-        etTimestamp.setText(timestamp?.let { convertTimestamp(it) } ?: "Ungültiger Wert")
+        // Assign data to EditText fields
+        etTimestamp.setText(timestamp?.let { convertTimestamp(it) } ?: "Invalid value")
         etLatitude.setText(latitude ?: "N/A")
         etLongitude.setText(longitude ?: "N/A")
         etAltitude.setText(altitude ?: "N/A")
 
-        // Przycisk powrotu do SecondActivity
+        // Button to return to SecondActivity
         findViewById<Button>(R.id.buttonToSecond).setOnClickListener {
             startActivity(Intent(this, SecondActivity::class.java))
             finish()
         }
 
-        // Przycisk usunięcia koordynatu
+        // Button to delete coordinate
         findViewById<Button>(R.id.buttonDelete).setOnClickListener {
             timestamp?.let { showDeleteConfirmationDialog(it) }
         }
 
-        // Przycisk aktualizacji koordynatu
+        // Button to update coordinate
         findViewById<Button>(R.id.buttonUpdate).setOnClickListener {
             showUpdateConfirmationDialog()
+        }
+
+        // Add item to Firebase realtime database
+        val addReportButton: Button = findViewById(R.id.addReportButton)
+        val editTextReport: EditText = findViewById(R.id.editTextReport)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Log.e("FirebaseAuth", "User is not logged in")
+            Toast.makeText(this, "Please log in first", Toast.LENGTH_LONG).show()
+        }
+        val userId = user?.uid
+        addReportButton.setOnClickListener {
+            Log.d("ReportButton", "Button clicked")
+            val reportText = editTextReport.text.toString().trim()
+            if (reportText.isNotEmpty() && userId != null) {
+                val report = mapOf(
+                    "userId" to userId,
+                    "timestamp" to (timestamp ?: 0L) as Any,  // Explicit cast to Any
+                    "report" to reportText,
+                    "latitude" to (latitude?.toDoubleOrNull() ?: 0.0) as Any,  // Explicit cast
+                    "longitude" to (longitude?.toDoubleOrNull() ?: 0.0) as Any  // Explicit cast
+                )
+                Log.d("ReportData", "Report Text: $reportText, User ID: $userId, Timestamp: $timestamp, Lat: $latitude, Lon: $longitude")
+                addReportToDatabase(report)
+            } else {
+                Toast.makeText(this, "Report name cannot be empty", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -171,4 +203,29 @@ class ThirdActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun addReportToDatabase(report: Map<String, Any>) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
+
+        // Prüfen, ob "hotspots" existiert
+        databaseReference.child("hotspots").get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) {
+                Log.w("Firebase", "Path 'hotspots' does not exist, creating it now.")
+            }
+
+            val newReportRef = databaseReference.child("hotspots").push()
+            newReportRef.setValue(report)
+                .addOnSuccessListener {
+                    Log.d("Firebase", "Report added successfully to /hotspots")
+                    Toast.makeText(this, "Report added!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firebase", "Failed to add report: ${e.message}")
+                    Toast.makeText(this, "Firebase Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        }.addOnFailureListener {
+            Log.e("Firebase", "Failed to check 'hotspots' path: ${it.message}")
+        }
+    }
+
 }

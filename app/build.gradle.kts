@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt") // for Room database
 
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -70,4 +72,23 @@ dependencies {
     // Dependencies for glide
     implementation(libs.glide)
     kapt(libs.compiler)
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
+    implementation("com.google.firebase:firebase-auth-ktx:22.1.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2") // UI para login
+
+    // 🔥 Firebase Realtime Database
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
 }
+
+// Aplicar Google Services
+apply(plugin = "com.google.gms.google-services")
