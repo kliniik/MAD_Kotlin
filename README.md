@@ -1,4 +1,4 @@
-# MAD_Kotlin
+# EcoFlood
 
 ## Workspace
 Github:
@@ -9,6 +9,11 @@ Workspace: https://upm365.sharepoint.com/sites/NataliaandLara
 
 ## Description
 EcoFlood is a disaster-prevention mobile app designed to help users stay informed and safe during floods and landslides. It provides real-time alerts based on weather data and crowdsourced reports from users. The app features GPS tracking, map integration, and offline capabilities to ensure that users have access to critical information even during emergencies. Additionally, users can report incidents like flooding or landslides, helping to build a community-driven platform for disaster prevention and awareness.
+
+Roll a dice results:
+- Environmental Topics: **2** (Drought / Moisture Deficit)
+- Impact on human, plants, and animals: **4** (Flooding, Landslides)
+- Hints for possible solutions: **1** (Fountains, Canals, Waterways)
 
 ## Screenshots and Navigation
 ![Screenshot1](screenshots/screen_app1.png)
