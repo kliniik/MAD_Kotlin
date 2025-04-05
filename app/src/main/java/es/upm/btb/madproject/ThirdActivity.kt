@@ -104,10 +104,12 @@ class ThirdActivity : AppCompatActivity() {
             if (reportText.isNotEmpty() && userId != null) {
                 val report = mapOf(
                     "userId" to userId,
-                    "timestamp" to (timestamp ?: 0L) as Any,  // Explicit cast to Any
+                    "userName" to (user.displayName ?: "Anonymous"),
+                    "timestamp" to (timestamp ?: 0L) as Any,
                     "report" to reportText,
-                    "latitude" to (latitude?.toDoubleOrNull() ?: 0.0) as Any,  // Explicit cast
-                    "longitude" to (longitude?.toDoubleOrNull() ?: 0.0) as Any  // Explicit cast
+                    "latitude" to (latitude?.toDoubleOrNull() ?: 0.0) as Any,
+                    "longitude" to (longitude?.toDoubleOrNull() ?: 0.0) as Any,
+                    "altitude" to (altitude?.toDoubleOrNull() ?: 0.0) as Any
                 )
                 Log.d("ReportData", "Report Text: $reportText, User ID: $userId, Timestamp: $timestamp, Lat: $latitude, Lon: $longitude")
                 addReportToDatabase(report)
@@ -207,7 +209,7 @@ class ThirdActivity : AppCompatActivity() {
     private fun addReportToDatabase(report: Map<String, Any>) {
         val databaseReference = FirebaseDatabase.getInstance().reference
 
-        // Prüfen, ob "hotspots" existiert
+        // Check, if "hotspots" exists
         databaseReference.child("hotspots").get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
                 Log.w("Firebase", "Path 'hotspots' does not exist, creating it now.")
