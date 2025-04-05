@@ -1,22 +1,28 @@
 package es.upm.btb.madproject
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 
 class TweetActivity : AppCompatActivity() {
 
@@ -39,6 +45,36 @@ class TweetActivity : AppCompatActivity() {
 
         fabAddTweet.setOnClickListener {
             showTweetDialog()
+        }
+
+        // Set status bar color
+        window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.colorBottomNavBackground)
+
+        // Set up the toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Set up the bottom navigation
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+        bottomNav.selectedItemId = R.id.navigation_home
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                R.id.navigation_map -> {
+                    startActivity(Intent(this, OpenStreetMapActivity::class.java))
+                    true
+                }
+                R.id.navigation_list -> {
+                    startActivity(Intent(this, SecondActivity::class.java))
+                    true
+                }
+                else -> false
+            }.also { finish() }
         }
     }
 
@@ -100,4 +136,27 @@ class TweetActivity : AppCompatActivity() {
 
         return Triple(locationName, loc.latitude, loc.longitude)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.top_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.action_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }

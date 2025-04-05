@@ -40,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import android.app.Activity
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
@@ -74,15 +75,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
             .into(findViewById(R.id.imageFlood))
 
         // set status bar color
-        //window.statusBarColor = getColor(R.color.primaryColor)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor))
-        }
+        window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.colorBottomNavBackground)
 
-        // Change the color of the navigation bar (bottom navigation bar)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setNavigationBarColor(resources.getColor(R.color.colorBottomNavBackground))
-        }
 
         // Button to tweet page
         val tweetButton = findViewById<Button>(R.id.btnOpenTweetPage)

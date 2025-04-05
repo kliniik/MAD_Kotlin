@@ -19,4 +19,6 @@
     <string name="tweet_message_placeholder">Tweet text</string>
     <string name="user_name_placeholder">User name</string>
 
+    <string name="coordinates_format">Lat: %1$.4f, Lon: %2$.4f</string>
+
 </resources>

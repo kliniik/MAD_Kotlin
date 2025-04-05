@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <!-- Toolbar TextView -->
+        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -115,20 +115,20 @@
             android:layout_marginTop="8dp"/>
 
     <!-- Button to tweet page -->
-
-    <!-- Bottom Navigation Bar -->
-
     <Button
         android:id="@+id/btnOpenTweetPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="584dp"
+        android:layout_marginTop="650dp"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/textColorPrimary"
         android:text="Go to Tweets"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation_view"
             android:layout_width="match_parent"
