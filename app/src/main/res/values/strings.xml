@@ -12,4 +12,11 @@
     <string name="signed_out">Signed out</string>
     <string name="signed_cancelled">Signed in cancelled</string>
 
+    <string name="dialog_header">Name + Location</string>
+    <string name="dialog_hint">Write your tweet...</string>
+
+    <string name="coordinates_placeholder">Lat: 0.00000, Lon: 0.00000</string>
+    <string name="tweet_message_placeholder">Tweet text</string>
+    <string name="user_name_placeholder">User name</string>
+
 </resources>

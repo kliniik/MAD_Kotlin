@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -83,6 +84,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
             window.setNavigationBarColor(resources.getColor(R.color.colorBottomNavBackground))
         }
 
+        // Button to tweet page
+        val tweetButton = findViewById<Button>(R.id.btnOpenTweetPage)
+        tweetButton.setOnClickListener {
+            val intent = Intent(this, TweetActivity::class.java)
+            startActivity(intent)
+        }
 
         // Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -172,8 +179,15 @@ class MainActivity : AppCompatActivity(), LocationListener {
             checkIfGpsIsEnabled()
         }
 
-        // Init authentication flow
-        launchSignInFlow()
+        // Init Authentication Flow
+        auth = FirebaseAuth.getInstance()
+
+        if (auth.currentUser == null) {
+            launchSignInFlow()
+        } else {
+            Log.d(TAG, "Already logged in as: ${auth.currentUser?.email}")
+            updateUIWithUsername()
+        }
 
     }
 
@@ -187,7 +201,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
             startLocationUpdates()
         }
 
-        updateUIWithUsername()
+        if (auth.currentUser == null) {
+            launchSignInFlow()
+        } else {
+            updateUIWithUsername()
+        }
+
     }
 
     // Toolbar menu
@@ -241,16 +260,21 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     private fun launchSignInFlow() {
         val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.EmailBuilder()
+                .setAllowNewAccounts(true)    // allows new accounts
+                .setRequireName(true)         // shows name field during registration
+                .build(),
             AuthUI.IdpConfig.GoogleBuilder().build()
         )
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build(),
-            RC_SIGN_IN
-        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
+            .setLogo(R.mipmap.ic_launcher) // optional
+            .build()
+
+        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
     private fun logout() {
         AuthUI.getInstance()
