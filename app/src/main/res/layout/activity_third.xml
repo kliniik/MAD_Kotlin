@@ -9,19 +9,35 @@
     tools:context=".ThirdActivity">
 
     <!-- Button to return to SecondActivity -->
+
+    <!-- Timestamp Label -->
+<!--    <Button-->
+<!--        android:id="@+id/buttonToSecond"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        android:backgroundTint="#004080"-->
+<!--        android:text="Back to GPS Coordinates"-->
+<!--        android:textColor="@color/textColorPrimary"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.051"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+
     <Button
         android:id="@+id/buttonToSecond"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to Second Activity"
-        android:backgroundTint="@color/buttonColor"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#00004080"
+        android:text="Back to GPS Coordinates"
         android:textColor="@color/textColorPrimary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"/>
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Timestamp Label -->
     <TextView
         android:id="@+id/timestampLabel"
         android:layout_width="wrap_content"
@@ -31,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@+id/buttonToSecond"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="8dp"/>
 
     <!-- Timestamp Input -->
     <EditText
@@ -53,11 +69,10 @@
         android:layout_height="wrap_content"
         android:text="Latitude"
         android:textSize="14sp"
-        android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/etTimestamp"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="8dp"/>
 
     <!-- Latitude Input -->
     <EditText
@@ -79,11 +94,11 @@
         android:layout_height="wrap_content"
         android:text="Longitude"
         android:textSize="14sp"
-        android:textColor="@android:color/white"
+
         app:layout_constraintTop_toBottomOf="@id/etLatitude"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="8dp"/>
 
     <!-- Longitude Input -->
     <EditText
@@ -105,11 +120,10 @@
         android:layout_height="wrap_content"
         android:text="Altitude"
         android:textSize="14sp"
-        android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/etLongitude"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="8dp"/>
 
     <!-- Altitude Input -->
     <EditText
@@ -127,22 +141,22 @@
     <!-- Button for updating coordinates -->
     <Button
         android:id="@+id/buttonUpdate"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/buttonGreen"
         android:text="Update Coordinates"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#00FF00"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/etAltitude"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/etAltitude" />
 
     <!-- Button for deleting coordinates -->
     <Button
         android:id="@+id/buttonDelete"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:text="Delete Coordinate"
+        android:text="Delete Coordinates"
         android:textColor="#FFFFFF"
         android:backgroundTint="#D32F2F"
         android:layout_marginTop="16dp"

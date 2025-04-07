@@ -177,14 +177,33 @@ class MainActivity : AppCompatActivity(), LocationListener {
         // Init Authentication Flow
         auth = FirebaseAuth.getInstance()
 
-        if (auth.currentUser == null) {
-            launchSignInFlow()
-        } else {
-            Log.d(TAG, "Already logged in as: ${auth.currentUser?.email}")
-            updateUIWithUsername()
-        }
+//        if (auth.currentUser == null) {
+//            launchSignInFlow()
+//        } else {
+//            Log.d(TAG, "Already logged in as: ${auth.currentUser?.email}")
+//            updateUIWithUsername()
+//        }
+
 
     }
+
+    override fun onStart() {
+        super.onStart()
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            Log.d(TAG, "Already logged in as: ${user.email}")
+            updateUIWithUsername()
+        } else {
+            // launchSignInFlow()
+            if (user == null) {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+        }
+    }
+
+
 
     override fun onResume() {
         super.onResume()
@@ -249,7 +268,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val userNameTextView: TextView = findViewById(R.id.userNameTextView)
         user?.let {
             val name = user.displayName ?: "No Name"
-            userNameTextView.text = "\uD83D\uDCA7 " + name + " \uD83D\uDCA7"
+            userNameTextView.text = "\uD83D\uDCA7" + name + "\uD83D\uDCA7"
         }
     }
 

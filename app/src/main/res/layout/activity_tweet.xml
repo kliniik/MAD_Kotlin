@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/PopupThemeWhiteText"
-        app:title="Tweets"
+        app:title="Community Feed"
         app:titleTextColor="@color/textColorPrimary" />
 
     <!-- Tweets -->

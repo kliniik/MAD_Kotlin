@@ -17,4 +17,5 @@
         <item name="android:popupBackground">@color/primaryColor</item> <!-- Tło menu -->
     </style>
 
+
 </resources>

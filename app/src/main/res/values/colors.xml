@@ -21,6 +21,13 @@
     <color name="colorSwitchThumb">#4A90E2</color>  <!-- Kolor kciuka (thumb) -->
     <color name="colorSwitchTrack">#90CAF9</color>  <!-- Kolor toru (track) -->
 
+    <color name="buttonGreen">#4CAF50</color>  <!-- stonowana zieleń -->
+    <color name="buttonRed">#F44336</color>  <!-- żywa, ale nie neonowa czerwień -->
+
+    <color name="backgroundDark">#00171717</color> <!-- dark mode background -->
+
+
+
 
 
 </resources>
