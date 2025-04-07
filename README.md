@@ -38,6 +38,8 @@ Technical features of the app:
 - Firebase authentication: Users can log in and authenticate with Firebase to report incidents and access community data.
 - Crowdsourced data: Collects and displays reports from users in real-time, making the app a community-driven platform.
 
+- This app was created using the Pegelalarm API providing information about water levels from about 30,000 water monitoring stations worldwide (https://pegelalarm.com/) with access until 15.07.2025
+
 ## How to Use
 1. Install the app from the Google Play Store or GitHub.
 2. Create an account using Firebase authentication (Google login available).
