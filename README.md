@@ -1,4 +1,4 @@
-# MAD_Kotlin
+# EcoFlood
 
 ## Workspace
 Github:
@@ -7,12 +7,17 @@ Github:
 
 Workspace: https://upm365.sharepoint.com/sites/NataliaandLara
 
+Roll a dice results:
+- Environmental Topics: **2** (Drought / Moisture Deficit)
+- Impact on human, plants, and animals: **4** (Flooding, Landslides)
+- Hints for possible solutions: **1** (Fountains, Canals, Waterways)
+
 ## Description
-EcoFlood is a disaster-prevention mobile app designed to help users stay informed and safe during floods and landslides. It provides real-time alerts based on weather data and crowdsourced reports from users. The app features GPS tracking, map integration, and offline capabilities to ensure that users have access to critical information even during emergencies. Additionally, users can report incidents like flooding or landslides, helping to build a community-driven platform for disaster prevention and awareness.
+EcoFlood is a mobile app designed to help prevent disaster by keeping users informed and safe during flood events. It delivers real-time information based on hydrological data and user-generated reports. With features like GPS tracking, interactive maps, and a community feed, the app ensures users can access vital information in emergency situations. Users can also report flooding in their area, contributing to a community-driven platform for awareness and prevention.
 
 ## Screenshots and Navigation
-![Screenshot1](screenshots/screen_app1.png)
-![Screenshot2](screenshots/screen_app2.png)
+| ![](screenshots/screen1.jpg) | ![](screenshots/screen2.jpg) | ![](screenshots/screen5.jpg) | 
+|------------------------------|------------------------------|------------------------------|
 
 ## Demo Video
 Short video demonstrating how the app works and all its features:  
@@ -21,26 +26,24 @@ Short video demonstrating how the app works and all its features:
 [App Overview](https://upm365-my.sharepoint.com/:v:/g/personal/n_klinik_alumnos_upm_es/Ef4AgLY4ycNHjniF9KE6WUQBunDQt_4iA5y7SE-0HYgfXg?e=ogf0rw&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
 ## Features
-Functional features of the app:
-- Real-time alerts: Users receive notifications about flood and landslide risks based on weather data and crowdsourced reports.
-- GPS tracking & map integration: Displays high-risk flood zones and allows users to view their current location on a map.
-- Incident reporting: Users can report flooded areas or landslides, contributing to a real-time data pool.
-- Offline mode: Saves flood-prone areas locally, enabling access without an internet connection during a disaster.
-- Navigation & evacuation routes: Provides safe evacuation routes and navigation options to guide users out of flood-affected areas.
+- Functional Features
+  - Real-Time Information: Users receive up-to-date flood risk alerts based on hydrological data and crowdsourced reports.
+  - GPS Tracking & Map Integration: Displays high-risk flood zones and shows the user's current location on an interactive map.
+  - Incident Reporting: Users can report flooded areas or landslides, contributing to a shared, real-time data pool.
+  - Community Feed: Keeps users informed and engaged, allowing them to support others during emergencies.
 
-Technical features of the app:
-- Weather API integration: Utilizes weather APIs for real-time flood and landslide alerts based on environmental data.
-- Firebase authentication: Users can log in and authenticate with Firebase to report incidents and access community data.
-- Crowdsourced data: Collects and displays reports from users in real-time, making the app a community-driven platform.
+- Technical Features
+  - API Integration: Uses the Pegelalarm API to access water level data from approximately 30,000 monitoring stations worldwide. Access available until July 15, 2025.
+  - Firebase Authentication: Users can sign in with Firebase (including Google login) to report incidents and engage with community features.
+  - Crowdsourced Data: Aggregates and displays user-submitted reports in real time, making EcoFlood a truly community-driven platform.
 
 ## How to Use
-1. Install the app from the Google Play Store or GitHub.
-2. Create an account using Firebase authentication (Google login available).
-3. Enable location services on your device for GPS tracking.
-4. View flood & landslide zones on the integrated map.
-5. Enable push notifications to receive real-time alerts for flood and landslide risks in your area.
-6. Report incidents by submitting data on flooded areas or landslides via the app’s reporting feature.
-7. Access offline maps of high-risk areas for situations where you have no internet access.
+1. Install the app from GitHub.
+2. Create an account using Firebase authentication (Google login supported).
+3. Enable location services on your device to allow GPS tracking.
+4. View flood zones and your current position on the interactive map.
+5. Report incidents such as flooding or landslides using the in-app reporting tool.
+6. Share the app with your community to help keep your family and neighbors safe.
 
 ## Participants
 - Natalia Klinik (n.klinik@alumnos.upm.es)
