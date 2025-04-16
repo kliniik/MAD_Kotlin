@@ -7,4 +7,21 @@
     <string name="title_config">Settings</string>
     <string name="navigation_drawer_open">Open Nav</string>
     <string name="navigation_drawer_close">Close Nav</string>
+
+    <string name="signed_in">Signed in</string>
+    <string name="signed_out">Signed out</string>
+    <string name="signed_cancelled">Signed in cancelled</string>
+
+    <string name="dialog_header">Name + Location</string>
+    <string name="dialog_hint">Write your tweet...</string>
+
+    <string name="coordinates_placeholder">Lat: 0.00000, Lon: 0.00000</string>
+    <string name="tweet_message_placeholder">Tweet text</string>
+    <string name="user_name_placeholder">User name</string>
+
+    <string name="coordinates_format">Lat: %1$.4f, Lon: %2$.4f</string>
+
+    <string name="default_web_client_id">165256621798-m5q9v3i1g0van4g5ldgu6si9q2145116.apps.googleusercontent.com</string>
+                                         165256621798-m5q9v3i1g0van4g5ldgu6si9q2145116.apps.googleusercontent.com
+
 </resources>

@@ -3,28 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Menu item for settings -->
-    <item
-        android:id="@+id/nav_home"
-        android:icon="@drawable/ic_settings"
-        android:title="Home"
-        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+<!--    <item-->
+<!--        android:id="@+id/nav_home"-->
+<!--        android:icon="@drawable/ic_settings"-->
+<!--        android:title="Home"-->
+<!--        app:showAsAction="never" /> &lt;!&ndash; Apply the style for white text color &ndash;&gt;-->
 
-    <item
-        android:id="@+id/nav_open_street_map"
-        android:title="OpenStreetMap Activity"
-        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+<!--&lt;!&ndash;    <item&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/nav_open_street_map"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:title="OpenStreetMap Activity"&ndash;&gt;-->
+<!--&lt;!&ndash;        app:showAsAction="never" /> &lt;!&ndash; Apply the style for white text color &ndash;&gt;&ndash;&gt;-->
 
-    <item
-        android:id="@+id/nav_second_activity"
-        android:icon="@drawable/ic_settings"
-        android:title="Saved GPS Coordinates"
-        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+<!--&lt;!&ndash;    <item&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/nav_second_activity"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:icon="@drawable/ic_settings"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:title="Saved GPS Coordinates"&ndash;&gt;-->
+<!--&lt;!&ndash;        app:showAsAction="never" /> &lt;!&ndash; Apply the style for white text color &ndash;&gt;&ndash;&gt;-->
 
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_settings"
+        android:orderInCategory="100"
         android:title="Settings"
-        app:showAsAction="never" /> <!-- Apply the style for white text color -->
+        app:showAsAction="always" /> <!-- Apply the style for white text color -->
 
+    <item
+        android:id="@+id/action_logout"
+        android:title="Log out"
+        android:orderInCategory="101"
+        app:showAsAction="never"/>
 
 </menu>

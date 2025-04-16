@@ -15,88 +15,80 @@ import android.view.MenuItem
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.view.GravityCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
-import androidx.drawerlayout.widget.DrawerLayout
 import android.os.Build
-
 import android.provider.Settings
 
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import es.upm.btb.madproject.room.AppDatabase
 import es.upm.btb.madproject.room.CoordinatesEntity
 import kotlinx.coroutines.launch
+import es.upm.btb.madproject.utils.PreferencesManager
+import es.upm.btb.madproject.network.RetrofitClient
+import es.upm.btb.madproject.network.PegelalarmResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.Locale
+
+import com.google.firebase.auth.FirebaseAuth
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
+import android.app.Activity
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var navigationView: NavigationView
     private lateinit var locationManager: LocationManager
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var locationSwitch: Switch
     private val locationPermissionCode = 2
     private var latestLocation: Location? = null
 
+    private lateinit var auth: FirebaseAuth
+    // companion is the same than an static object in java
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val RC_SIGN_IN = 123
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        RetrofitClient.initPreferences(this)
+        PreferencesManager.init(this)  // Initializes preferences
+        val apiKey = PreferencesManager.getInstance().getApiKey()
+
         setContentView(R.layout.activity_main)
 
-        // set status bar color
-        //window.statusBarColor = getColor(R.color.primaryColor)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.primaryColor));
-        }
+        fetchHighestWaterLevel()
+        val floodImageUrl = "https://www.science.org/do/10.1126/science.abl5271/abs/germanyfloods_1280x720.jpg"
 
+        Glide.with(this)
+            .load(floodImageUrl)
+            .placeholder(R.drawable.icon_placeholder)
+            .into(findViewById(R.id.imageFlood))
+
+        // set status bar color
+        window.statusBarColor = ContextCompat.getColor(this, R.color.primaryColor)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.colorBottomNavBackground)
+
+
+        // Button to tweet page
+        val tweetButton = findViewById<Button>(R.id.btnOpenTweetPage)
+        tweetButton.setOnClickListener {
+            val intent = Intent(this, TweetActivity::class.java)
+            startActivity(intent)
+        }
 
         // Toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        // Initialize the DrawerLayout and NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.navigation_view)
-
-        // Set up item selection listener for the Drawer
-        navigationView.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.nav_open_street_map -> {
-                    val intent = Intent(this, OpenStreetMapActivity::class.java)
-                    latestLocation?.let {
-                        val bundle = Bundle()
-                        bundle.putParcelable("location", it)
-                        intent.putExtra("locationBundle", bundle)
-                    }
-                    startActivity(intent)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.nav_second_activity -> {
-                    startActivity(Intent(this, SecondActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                R.id.menu_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-
-                else -> false
-            }
-        }
 
         // Bottom Navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
@@ -181,7 +173,37 @@ class MainActivity : AppCompatActivity(), LocationListener {
             // Check if GPS is enabled
             checkIfGpsIsEnabled()
         }
+
+        // Init Authentication Flow
+        auth = FirebaseAuth.getInstance()
+
+//        if (auth.currentUser == null) {
+//            launchSignInFlow()
+//        } else {
+//            Log.d(TAG, "Already logged in as: ${auth.currentUser?.email}")
+//            updateUIWithUsername()
+//        }
+
+
     }
+
+    override fun onStart() {
+        super.onStart()
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            Log.d(TAG, "Already logged in as: ${user.email}")
+            updateUIWithUsername()
+        } else {
+            // launchSignInFlow()
+            if (user == null) {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+        }
+    }
+
+
 
     override fun onResume() {
         super.onResume()
@@ -192,8 +214,14 @@ class MainActivity : AppCompatActivity(), LocationListener {
         if (isLocationEnabled) {
             startLocationUpdates()
         }
-    }
 
+        if (auth.currentUser == null) {
+            launchSignInFlow()
+        } else {
+            updateUIWithUsername()
+        }
+
+    }
 
     // Toolbar menu
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -204,28 +232,75 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-
-            R.id.nav_open_street_map -> {
-                val intent = Intent(this, OpenStreetMapActivity::class.java)
-                latestLocation?.let {
-                    val bundle = Bundle()
-                    bundle.putParcelable("location", it)
-                    intent.putExtra("locationBundle", bundle)
-                }
+                // Go to settings activity
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
-
-            R.id.nav_second_activity -> {
-                startActivity(Intent(this, SecondActivity::class.java))
+            R.id.action_logout -> {
+                logout()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+            if (resultCode == Activity.RESULT_OK) {
+                // user login succeeded
+                val user = FirebaseAuth.getInstance().currentUser
+                Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "onActivityResult " + getString(R.string.signed_in))
+            } else {
+                // user login failed
+                Log.e(TAG, "Error starting auth session: ${response?.error?.errorCode}")
+                Toast.makeText(this, R.string.signed_cancelled, Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+    }
+
+    private fun updateUIWithUsername() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userNameTextView: TextView = findViewById(R.id.userNameTextView)
+        user?.let {
+            val name = user.displayName ?: "No Name"
+            userNameTextView.text = "\uD83D\uDCA7" + name + "\uD83D\uDCA7"
+        }
+    }
+
+    private fun launchSignInFlow() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder()
+                .setAllowNewAccounts(true)    // allows new accounts
+                .setRequireName(true)         // shows name field during registration
+                .build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
+            .setLogo(R.mipmap.ic_launcher) // optional
+            .build()
+
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+    private fun logout() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                // Restart activity after finishing
+                val intent = Intent(this, MainActivity::class.java)
+                // Clean back stack so that user cannot retake activity after logout
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
     }
 
     // Location Updates
@@ -287,12 +362,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         )
     }
 
-    private fun saveCoordinatesToDatabase(
-        latitude: Double,
-        longitude: Double,
-        altitude: Double,
-        timestamp: Long
-    ) {
+    private fun saveCoordinatesToDatabase(latitude: Double, longitude: Double, altitude: Double, timestamp: Long) {
         val coordinates = CoordinatesEntity(
             timestamp = timestamp,
             latitude = latitude,
@@ -365,18 +435,64 @@ class MainActivity : AppCompatActivity(), LocationListener {
             }
         }
     }
-}
 
-//    private fun saveCoordinatesToFile(latitude: Double, longitude: Double, altitude: Double) {
-//        val file = File(filesDir, "gps_coordinates.csv")
-//        val timestamp = System.currentTimeMillis().toString()
-//        val formattedData = "$timestamp;$latitude;$longitude;$altitude\n"
-//
-//        try {
-//            file.appendText(formattedData)
-//            Log.d("FILE_WRITE", "GPS data saved: $formattedData")
-//        } catch (e: IOException) {
-//            Log.e("FILE_WRITE", "Error saving data: ${e.message}")
-//        }
-//    }
-//}
+    private fun fetchHighestWaterLevel() {
+        val commonIds = listOf(
+            "jucar-0O01DQG2-es", "jucar-0E03DQG2-es", "jucar-0O04DQG0-es", "jucar-0O03DQG0-es",
+            "jucar-0O02DQG0-es", "jucar-0E04EVI1-es", "jucar-0E01EVI1-es", "jucar-7C01DQG2-es",
+            "jucar-7A02DQG1-es", "jucar-0R04DQG0-es", "jucar-7E03EVI1-es", "jucar-1E04EVI1-es",
+            "jucar-6E03EVI1-es", "jucar-6E02DQG1-es", "jucar-6A02DQG1-es", "jucar-9O03DQG4-es",
+            "jucar-1E07DQG4-es", "jucar-1E09DQG1-es", "jucar-1E06EVI1-es", "jucar-1E03DQG3-es"
+        )
+
+        var maxLevel = 0.0
+        var highestStation = "Unknown"
+        var responsesReceived = 0
+
+        for (commonId in commonIds) {
+            RetrofitClient.api.getWaterLevelData(commonId).enqueue(object : Callback<PegelalarmResponse> {
+                override fun onResponse(call: Call<PegelalarmResponse>, response: Response<PegelalarmResponse>) {
+                    responsesReceived++
+                    if (response.isSuccessful) {
+                        response.body()?.let { data ->
+                            if (data.payload.stations.isNotEmpty()) {
+                                val station = data.payload.stations[0]
+                                val waterLevel = station.data.firstOrNull()?.value ?: 0.0
+                                if (waterLevel > maxLevel) {
+                                    maxLevel = waterLevel
+                                    highestStation = station.name
+                                }
+                            }
+                        }
+                    }
+                    if (responsesReceived == commonIds.size) {
+                        updateUI(maxLevel, highestStation)
+                    }
+                }
+
+                override fun onFailure(call: Call<PegelalarmResponse>, t: Throwable) {
+                    responsesReceived++
+                    if (responsesReceived == commonIds.size) {
+                        updateUI(maxLevel, highestStation)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun updateUI(maxLevel: Double, highestStation: String) {
+        val thresholdGreen = if (maxLevel > 0) maxLevel / 3 else 0.0
+        val thresholdYellow = if (maxLevel > 0) 2 * maxLevel / 3 else 0.0
+
+        val format = "%.2f"
+        val formattedGreen = String.format(Locale.ENGLISH, format, thresholdGreen)
+        val formattedYellow = String.format(Locale.ENGLISH, format, thresholdYellow)
+        val formattedMax = String.format(Locale.ENGLISH, format, maxLevel)
+
+        runOnUiThread {
+            findViewById<TextView>(R.id.tvHighestStation).text = "Station with highest water level: \n$highestStation ($formattedMax cm)"
+            findViewById<TextView>(R.id.tvThresholds).text = "Thresholds: \n🟢 $formattedGreen cm, 🟡 $formattedYellow cm, 🔴 $formattedMax cm"
+        }
+    }
+
+}

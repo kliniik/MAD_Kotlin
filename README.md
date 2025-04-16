@@ -16,12 +16,11 @@ Roll a dice results:
 EcoFlood is a mobile app designed to help prevent disaster by keeping users informed and safe during flood events. It delivers real-time information based on hydrological data and user-generated reports. With features like GPS tracking, interactive maps, and a community feed, the app ensures users can access vital information in emergency situations. Users can also report flooding in their area, contributing to a community-driven platform for awareness and prevention.
 
 ## Screenshots and Navigation
-![Screenshot1](screenshots/screen0.jpg)
-![Screenshot2](screenshots/screen2.jpg)
+| ![](screenshots/screen1.jpg) | ![](screenshots/screen2.jpg) | ![](screenshots/screen5.jpg) | 
+|------------------------------|------------------------------|------------------------------|
 
 ## Demo Video
-Short video demonstrating how the app works and all its features:  
-[to be added]  
+[Demonstration Video](https://upm365-my.sharepoint.com/:v:/g/personal/n_klinik_alumnos_upm_es/ESUO7-D0r-hJguQM3ErRN8oBpK0WNAzTQqVkDom6jHtQXQ?e=mTBhhJ&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
 [App Overview](https://upm365-my.sharepoint.com/:v:/g/personal/n_klinik_alumnos_upm_es/Ef4AgLY4ycNHjniF9KE6WUQBunDQt_4iA5y7SE-0HYgfXg?e=ogf0rw&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
